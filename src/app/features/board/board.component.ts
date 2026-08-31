@@ -15,12 +15,12 @@ import { LessonDetailDialogComponent } from './lesson-detail-dialog.component';
     <section class="page-enter board-page">
       <div class="page-head board-toolbar">
         <div>
-          <span class="eyebrow">Execution workspace</span>
-          <h1>Learning board</h1>
-          <p class="muted">Open any lesson to review its details, add comments and keep progress moving.</p>
+          <span class="eyebrow">Learning / Board</span>
+          <h1>Board</h1>
+          <p class="muted">Track lessons across your workflow. Select an item to open its details and discussion.</p>
         </div>
         <div class="board-controls">
-          <span class="board-count">{{ allLessons().length }} items</span>
+          <span class="board-count">{{ allLessons().length }} work items</span>
           <select [(ngModel)]="selectedPath" (change)="loadBoard()" aria-label="Select learning path">
             <option value="">Select learning path</option>
             @for (path of paths(); track path._id) { <option [value]="path._id">{{ path.title }}</option> }
@@ -28,24 +28,32 @@ import { LessonDetailDialogComponent } from './lesson-detail-dialog.component';
         </div>
       </div>
 
+      <div class="board-actions-row">
+        <div class="quick-filter"><button type="button" class="filter-active">All</button><button type="button">My lessons</button><button type="button">Scheduled</button></div>
+        <span class="board-view-note">Select a card to open details</span>
+      </div>
+
       <div class="board-scroll-shell">
         <div class="board vibrant-board">
           @for (status of statuses; track status) {
             <div class="column column-{{ status.toLowerCase() }}">
               <div class="column-head">
-                <div class="column-title"><span class="status-dot"></span><h3>{{ label(status) }}</h3></div>
-                <span class="column-count">{{ byStatus(status).length }}</span>
+                <div class="column-title"><h3>{{ label(status) }}</h3><span class="column-count">{{ byStatus(status).length }}</span></div>
               </div>
               <div class="column-items">
                 @for (lesson of byStatus(status); track lesson._id) {
                   <article class="ticket issue-ticket" tabindex="0" (click)="openLesson(lesson)" (keydown.enter)="openLesson(lesson)">
-                    <div class="ticket-topline"><span class="issue-id">LF-{{ shortId(lesson._id) }}</span><span class="priority-pill">{{ lesson.durationMinutes }}m</span></div>
+                    <span class="card-color-strip" aria-hidden="true"></span>
                     <strong>{{ lesson.title }}</strong>
                     @if (lesson.description) { <p>{{ lesson.description }}</p> }
-                    <div class="ticket-meta"><span>{{ lesson.scheduledAt ? formatDate(lesson.scheduledAt) : 'Unscheduled' }}</span><span class="ticket-status">{{ label(lesson.status) }}</span></div>
+                    <div class="ticket-meta-row">
+                      <div class="ticket-type-meta"><span class="issue-type-icon">✓</span><span class="issue-id">LF-{{ shortId(lesson._id) }}</span></div>
+                      <div class="ticket-secondary-meta"><span class="priority-dot">●</span><span>{{ lesson.durationMinutes }}m</span><span class="avatar-mini">BK</span></div>
+                    </div>
+                    @if (lesson.scheduledAt) { <span class="due-label">{{ formatDate(lesson.scheduledAt) }}</span> }
                     <div class="ticket-actions" (click)="$event.stopPropagation()"><button mat-button (click)="openStatusDialog(lesson)">Status</button><button mat-button (click)="openScheduleDialog(lesson)">{{ lesson.status === 'MISSED' ? 'Reschedule' : 'Schedule' }}</button></div>
                   </article>
-                } @empty { <div class="column-empty"><span>＋</span><p>No lessons in this stage</p></div> }
+                } @empty { <div class="column-empty"><p>No work items</p></div> }
               </div>
             </div>
           }
@@ -67,8 +75,18 @@ export class BoardComponent implements OnInit {
   byStatus(status: LessonStatus): Lesson[] { return this.allLessons().filter(lesson => lesson.status === status); }
   label(status: LessonStatus): string { return status.replaceAll('_', ' ').toLowerCase(); }
   shortId(id: string): string { return id.slice(-6).toUpperCase(); }
-  formatDate(value: string): string { return new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value)); }
-  openLesson(lesson: Lesson): void { this.dialog.open(LessonDetailDialogComponent,{width:'min(980px, 96vw)',maxWidth:'96vw',maxHeight:'92vh',panelClass:'issue-detail-dialog',data:{lesson}}); }
+  formatDate(value: string): string { return new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric'}).format(new Date(value)); }
+  openLesson(lesson: Lesson): void {
+    this.dialog.open(LessonDetailDialogComponent, {
+      width: '760px',
+      maxWidth: '92vw',
+      height: '100vh',
+      maxHeight: '100vh',
+      position: { top: '0', right: '0' },
+      panelClass: 'issue-detail-dialog',
+      data: { lesson }
+    });
+  }
   openStatusDialog(lesson: Lesson): void {
     const ref=this.dialog.open(ActionDialogComponent,{width:'500px',data:{eyebrow:'Lesson update',title:`Update “${lesson.title}”`,description:'Choose the workflow state that best represents this lesson.',submitLabel:'Update lesson',fields:[{key:'status',label:'Status',type:'select',value:lesson.status,required:true,options:this.statuses.map(status=>({label:status.replaceAll('_',' '),value:status}))}]}});
     ref.afterClosed().subscribe(values=>{if(values?.status)this.api.patch(`/api/v1/lessons/${lesson._id}`,{status:values.status}).subscribe(()=>this.loadBoard());});
