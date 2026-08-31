@@ -8,6 +8,7 @@ import { RouterLink } from '@angular/router';
 @Component({
   standalone: true,
   imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, RouterLink],
+  styleUrl: './contact.component.css',
   template: `
     <section class="public-info-page contact-page page-enter">
       <div class="contact-layout">
