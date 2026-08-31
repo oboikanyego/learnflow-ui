@@ -28,7 +28,7 @@ import { AuthService } from '../../core/auth/auth.service';
           <mat-form-field appearance="outline">
             <mat-label>Password</mat-label>
             <input matInput [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="current-password">
-            <button mat-button matSuffix type="button" class="password-toggle" (click)="showPassword.update(value => !value)">{{ showPassword() ? 'Hide' : 'Show' }}</button>
+            <button mat-button matSuffix type="button" class="password-toggle" (click)="togglePassword()">{{ showPassword() ? 'Hide' : 'Show' }}</button>
           </mat-form-field>
           <div class="forgot-row"><a routerLink="/forgot-password">Forgot password?</a></div>
           @if (error()) { <p class="error">{{ error() }}</p> }
@@ -52,6 +52,9 @@ export class LoginComponent {
   constructor(fb: FormBuilder, private readonly auth: AuthService, private readonly router: Router) {
     this.form = fb.nonNullable.group({ email: ['', [Validators.required, Validators.email]], password: ['', [Validators.required, Validators.minLength(8)]] });
   }
+
+  togglePassword(): void { this.showPassword.set(!this.showPassword()); }
+
   submit(): void {
     if (this.form.invalid) return;
     this.loading.set(true); this.error.set('');
