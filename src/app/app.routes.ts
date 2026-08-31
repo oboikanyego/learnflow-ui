@@ -16,6 +16,7 @@ export const routes: Routes = [
   { path: 'import', canActivate: [authGuard], loadComponent: () => import('./features/import/import.component').then(m => m.ImportComponent) },
   { path: 'notifications', canActivate: [authGuard], loadComponent: () => import('./features/notifications/notifications.component').then(m => m.NotificationsComponent) },
   { path: 'ai-planner', canActivate: [authGuard], loadComponent: () => import('./features/ai-planner/ai-planner.component').then(m => m.AiPlannerComponent) },
+  { path: 'ai-requests', canActivate: [authGuard], loadComponent: () => import('./features/ai-requests/ai-requests.component').then(m => m.AiRequestsComponent) },
   { path: 'ai-coach', canActivate: [authGuard], loadComponent: () => import('./features/ai-coach/ai-coach.component').then(m => m.AiCoachComponent) },
   { path: '**', redirectTo: '' }
 ];
