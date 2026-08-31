@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ApiService } from '../../core/services/api.service';
+import { MarkdownContentComponent } from '../../shared/markdown-content.component';
 
 type CoachResponse = { answer: string; provider: string };
 type ProviderResponse = { provider: string; configured: boolean };
@@ -11,9 +12,9 @@ type ChatItem = { role: 'user' | 'coach'; text: string };
 
 @Component({
   standalone: true,
-  imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MarkdownContentComponent],
   styles: [`
-    .coach-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px}.coach-card{border:1px solid #dcdfe4;border-radius:10px;background:#fff;min-height:560px;display:flex;flex-direction:column}.coach-stream{padding:22px;display:flex;flex-direction:column;gap:14px;flex:1;max-height:58vh;overflow:auto}.coach-message{max-width:82%;padding:12px 14px;border-radius:10px;white-space:pre-wrap}.coach-message.user{align-self:flex-end;background:#e9f2ff;color:#172b4d}.coach-message.coach{align-self:flex-start;background:#f1f2f4;color:#172b4d}.coach-composer{border-top:1px solid #dcdfe4;padding:16px}.coach-composer mat-form-field{width:100%}.coach-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}.coach-side{border:1px solid #dcdfe4;border-radius:10px;padding:18px;background:#f7f8f9;height:max-content}.provider-chip{display:inline-flex;padding:5px 8px;border-radius:999px;background:#e9f2ff;color:#0c66e4;font-size:.72rem;font-weight:800}.starter-list{display:grid;gap:8px;margin-top:14px}.starter-list button{text-align:left;justify-content:flex-start}.empty-coach{margin:auto;text-align:center;max-width:440px;color:#626f86}.empty-coach strong{display:block;color:#172b4d;font-size:1.05rem;margin-bottom:6px}@media(max-width:900px){.coach-layout{grid-template-columns:1fr}.coach-side{order:-1}}
+    .coach-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px}.coach-card{border:1px solid #dcdfe4;border-radius:10px;background:#fff;min-height:560px;display:flex;flex-direction:column}.coach-stream{padding:22px;display:flex;flex-direction:column;gap:14px;flex:1;max-height:58vh;overflow:auto}.coach-message{max-width:82%;padding:12px 14px;border-radius:10px}.coach-message.user{align-self:flex-end;background:#e9f2ff;color:#172b4d;white-space:pre-wrap}.coach-message.coach{align-self:flex-start;background:#f7f8f9;color:#172b4d;border:1px solid #e4e7ec;min-width:min(680px,82%)}.coach-composer{border-top:1px solid #dcdfe4;padding:16px}.coach-composer mat-form-field{width:100%}.coach-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}.coach-side{border:1px solid #dcdfe4;border-radius:10px;padding:18px;background:#f7f8f9;height:max-content}.provider-chip{display:inline-flex;padding:5px 8px;border-radius:999px;background:#e9f2ff;color:#0c66e4;font-size:.72rem;font-weight:800}.starter-list{display:grid;gap:8px;margin-top:14px}.starter-list button{text-align:left;justify-content:flex-start}.empty-coach{margin:auto;text-align:center;max-width:440px;color:#626f86}.empty-coach strong{display:block;color:#172b4d;font-size:1.05rem;margin-bottom:6px}@media(max-width:900px){.coach-layout{grid-template-columns:1fr}.coach-side{order:-1}.coach-message{max-width:94%}.coach-message.coach{min-width:0}}
   `],
   template: `
     <section class="page-enter">
@@ -25,7 +26,11 @@ type ChatItem = { role: 'user' | 'coach'; text: string };
       <div class="coach-layout">
         <div class="coach-card">
           <div class="coach-stream">
-            @for(item of messages(); track $index){<div class="coach-message {{item.role}}">{{ item.text }}</div>}
+            @for(item of messages(); track $index){
+              <div class="coach-message {{item.role}}">
+                @if(item.role === 'coach'){<app-markdown-content [markdown]="item.text" />}@else{{ item.text }}
+              </div>
+            }
             @empty{<div class="empty-coach"><strong>What are you working through?</strong><span>The coach can explain a concept, break down a difficult lesson, or suggest what to learn next.</span></div>}
           </div>
           <div class="coach-composer">
