@@ -34,5 +34,3 @@ The frontend is designed to be deployed to Netlify and consumes the LearnFlow AP
 - Scheduling and lesson status tracking
 - Reminder visibility
 - Learning progress dashboard
-
-See the project documentation in the API repository for the broader product requirements.
