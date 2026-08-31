@@ -1,16 +1,3 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { ApiService } from '../../core/services/api.service';
-
-type LearningPath = { _id: string; title: string; description?: string; status: string };
-
-@Component({
-  standalone: true,
-  imports: [MatCardModule],
-  template: `<section><h1>Learning paths</h1><p class="muted">Imported and manually created plans appear here.</p>@for (path of paths(); track path._id) {<mat-card><mat-card-content><strong>{{ path.title }}</strong><div>{{ path.status }}</div></mat-card-content></mat-card>} @empty {<p>No learning paths yet.</p>}</section>`
-})
-export class LearningPathsComponent implements OnInit {
-  private readonly api = inject(ApiService);
-  readonly paths = signal<LearningPath[]>([]);
-  ngOnInit(): void { this.api.get<LearningPath[]>('/api/v1/learning-paths').subscribe({ next: data => this.paths.set(data), error: () => this.paths.set([]) }); }
-}
+import { Component,OnInit,inject,signal } from '@angular/core';import { FormsModule } from '@angular/forms';import { RouterLink } from '@angular/router';import { MatButtonModule } from '@angular/material/button';import { MatCardModule } from '@angular/material/card';import { MatFormFieldModule } from '@angular/material/form-field';import { MatInputModule } from '@angular/material/input';import { ApiService } from '../../core/services/api.service';import { LearningPath } from '../../models/learning.models';
+@Component({standalone:true,imports:[FormsModule,RouterLink,MatButtonModule,MatCardModule,MatFormFieldModule,MatInputModule],template:`<section><h1>Learning paths</h1><p class="muted">Create, import and manage your long-term learning goals.</p><div class="create-row"><mat-form-field><mat-label>Path title</mat-label><input matInput [(ngModel)]="title"></mat-form-field><mat-form-field><mat-label>Description</mat-label><input matInput [(ngModel)]="description"></mat-form-field><button mat-flat-button (click)="create()" [disabled]="!title.trim()">Create</button></div><div class="card-grid">@for(path of paths();track path._id){<mat-card><mat-card-content><h3>{{path.title}}</h3><p>{{path.description}}</p><span>{{path.status}}</span><div><a mat-button [routerLink]="['/learning-paths',path._id]">Open</a><button mat-button (click)="remove(path._id)">Delete</button></div></mat-card-content></mat-card>}@empty{<p>No learning paths yet.</p>}</div></section>`})
+export class LearningPathsComponent implements OnInit{private api=inject(ApiService);paths=signal<LearningPath[]>([]);title='';description='';ngOnInit(){this.load();}load(){this.api.get<LearningPath[]>('/api/v1/learning-paths').subscribe(v=>this.paths.set(v));}create(){this.api.post('/api/v1/learning-paths',{title:this.title,description:this.description}).subscribe(()=>{this.title='';this.description='';this.load();});}remove(id:string){this.api.delete(`/api/v1/learning-paths/${id}`).subscribe(()=>this.load());}}
