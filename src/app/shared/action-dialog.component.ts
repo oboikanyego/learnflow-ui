@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
-export type ActionFieldType = 'text' | 'textarea' | 'number' | 'datetime-local' | 'select';
+export type ActionFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'datetime-local' | 'select';
 
 export interface ActionDialogField {
   key: string;
@@ -36,7 +36,6 @@ export interface ActionDialogData {
       @if (data.eyebrow) { <span class="dialog-eyebrow">{{ data.eyebrow }}</span> }
       <h2 mat-dialog-title>{{ data.title }}</h2>
       @if (data.description) { <p class="dialog-copy">{{ data.description }}</p> }
-
       <mat-dialog-content class="dialog-content">
         @for (field of data.fields; track field.key) {
           <mat-form-field appearance="outline" class="dialog-field">
@@ -45,58 +44,32 @@ export interface ActionDialogData {
               <textarea matInput rows="4" [(ngModel)]="values[field.key]" [required]="field.required ?? false"></textarea>
             } @else if (field.type === 'select') {
               <mat-select [(ngModel)]="values[field.key]" [required]="field.required ?? false">
-                @for (option of field.options ?? []; track option.value) {
-                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
-                }
+                @for (option of field.options ?? []; track option.value) { <mat-option [value]="option.value">{{ option.label }}</mat-option> }
               </mat-select>
             } @else {
-              <input
-                matInput
-                [type]="field.type"
-                [(ngModel)]="values[field.key]"
-                [required]="field.required ?? false"
-                [min]="field.min ?? null">
+              <input matInput [type]="field.type" [(ngModel)]="values[field.key]" [required]="field.required ?? false" [min]="field.min ?? null">
             }
             @if (field.hint) { <mat-hint>{{ field.hint }}</mat-hint> }
           </mat-form-field>
         }
       </mat-dialog-content>
-
       <mat-dialog-actions align="end" class="dialog-actions">
         <button mat-button type="button" (click)="dialogRef.close()">Cancel</button>
-        <button mat-flat-button type="button" [class.danger-action]="data.destructive" [disabled]="!isValid()" (click)="submit()">
-          {{ data.submitLabel ?? 'Save' }}
-        </button>
+        <button mat-flat-button type="button" [class.danger-action]="data.destructive" [disabled]="!isValid()" (click)="submit()">{{ data.submitLabel ?? 'Save' }}</button>
       </mat-dialog-actions>
     </div>
   `
 })
 export class ActionDialogComponent {
   values: Record<string, string | number> = {};
-
-  constructor(
-    readonly dialogRef: MatDialogRef<ActionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) readonly data: ActionDialogData
-  ) {
+  constructor(readonly dialogRef: MatDialogRef<ActionDialogComponent>, @Inject(MAT_DIALOG_DATA) readonly data: ActionDialogData) {
     for (const field of data.fields) this.values[field.key] = field.value ?? '';
   }
-
-  isValid(): boolean {
-    return this.data.fields.every(field => !field.required || String(this.values[field.key] ?? '').trim().length > 0);
-  }
-
-  submit(): void {
-    if (this.isValid()) this.dialogRef.close(this.values);
-  }
+  isValid(): boolean { return this.data.fields.every(field => !field.required || String(this.values[field.key] ?? '').trim().length > 0); }
+  submit(): void { if (this.isValid()) this.dialogRef.close(this.values); }
 }
 
-export interface ConfirmDialogData {
-  eyebrow?: string;
-  title: string;
-  description: string;
-  confirmLabel?: string;
-  destructive?: boolean;
-}
+export interface ConfirmDialogData { eyebrow?: string; title: string; description: string; confirmLabel?: string; destructive?: boolean; }
 
 @Component({
   standalone: true,
@@ -108,16 +81,11 @@ export interface ConfirmDialogData {
       <p class="dialog-copy">{{ data.description }}</p>
       <mat-dialog-actions align="end" class="dialog-actions">
         <button mat-button type="button" (click)="dialogRef.close(false)">Cancel</button>
-        <button mat-flat-button type="button" [class.danger-action]="data.destructive" (click)="dialogRef.close(true)">
-          {{ data.confirmLabel ?? 'Confirm' }}
-        </button>
+        <button mat-flat-button type="button" [class.danger-action]="data.destructive" (click)="dialogRef.close(true)">{{ data.confirmLabel ?? 'Confirm' }}</button>
       </mat-dialog-actions>
     </div>
   `
 })
 export class ConfirmDialogComponent {
-  constructor(
-    readonly dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) readonly data: ConfirmDialogData
-  ) {}
+  constructor(readonly dialogRef: MatDialogRef<ConfirmDialogComponent>, @Inject(MAT_DIALOG_DATA) readonly data: ConfirmDialogData) {}
 }
