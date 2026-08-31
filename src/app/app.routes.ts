@@ -24,5 +24,6 @@ export const routes: Routes = [
   { path: 'ai-usage', canActivate: [authGuard], loadComponent: () => import('./features/ai-usage/ai-usage.component').then(m => m.AiUsageComponent) },
   { path: 'admin', canActivate: [authGuard], loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent) },
   { path: 'admin/entitlements', canActivate: [authGuard], loadComponent: () => import('./features/admin/entitlements.component').then(m => m.EntitlementsComponent) },
+  { path: 'admin/billing', canActivate: [authGuard], loadComponent: () => import('./features/admin/billing-settings.component').then(m => m.BillingSettingsComponent) },
   { path: '**', redirectTo: '' }
 ];
