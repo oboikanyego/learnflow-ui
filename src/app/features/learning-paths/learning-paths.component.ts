@@ -16,7 +16,7 @@ import { ActionDialogComponent, ConfirmDialogComponent } from '../../shared/acti
         <div>
           <span class="eyebrow">Learning portfolio</span>
           <h1>Learning paths</h1>
-          <p class="muted">Create, organize and manage long-term learning outcomes.</p>
+          <p class="muted">Create, organize and manage long-term learning outcomes, including plans you imported.</p>
         </div>
         <button mat-flat-button class="primary-cta" (click)="openCreateDialog()">New learning path</button>
       </div>
@@ -33,7 +33,7 @@ import { ActionDialogComponent, ConfirmDialogComponent } from '../../shared/acti
               <p class="muted">{{ path.description || 'No description added yet.' }}</p>
               <div class="lesson-actions" style="margin-top:18px">
                 <a mat-flat-button [routerLink]="['/learning-paths', path._id]">Open workspace</a>
-                <button mat-button (click)="confirmRemove(path)">Remove</button>
+                <button mat-button class="danger-action" (click)="confirmRemove(path)">Delete plan</button>
               </div>
             </mat-card-content>
           </mat-card>
@@ -47,7 +47,8 @@ import { ActionDialogComponent, ConfirmDialogComponent } from '../../shared/acti
         }
       </div>
     </section>
-  `
+  `,
+  styles: [`.danger-action{color:#ae2e24!important;font-weight:800}`]
 })
 export class LearningPathsComponent implements OnInit {
   private readonly api = inject(ApiService);
@@ -88,10 +89,10 @@ export class LearningPathsComponent implements OnInit {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       width: '480px',
       data: {
-        eyebrow: 'Remove learning path',
-        title: `Remove “${path.title}”?`,
-        description: 'This removes the learning path and its associated hierarchy from your workspace.',
-        confirmLabel: 'Remove path',
+        eyebrow: 'Delete learning plan',
+        title: `Delete “${path.title}”?`,
+        description: 'This permanently removes the learning plan, whether it was created in LearnFlow or imported, together with its phases, modules and lessons.',
+        confirmLabel: 'Delete plan',
         destructive: true
       }
     });
