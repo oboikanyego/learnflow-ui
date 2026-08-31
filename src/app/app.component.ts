@@ -1,16 +1,2 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
-
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterLink, RouterOutlet],
-  template: `
-    <header class="app-header">
-      <a routerLink="/" class="brand">LearnFlow</a>
-      <nav><a routerLink="/dashboard">Dashboard</a><a routerLink="/learning-paths">Learning Paths</a></nav>
-    </header>
-    <main class="shell"><router-outlet /></main>
-  `
-})
-export class AppComponent {}
+import { Component } from '@angular/core';import { RouterLink,RouterOutlet } from '@angular/router';
+@Component({selector:'app-root',standalone:true,imports:[RouterLink,RouterOutlet],template:`<header class="app-header"><a routerLink="/" class="brand">LearnFlow</a><nav><a routerLink="/dashboard">Dashboard</a><a routerLink="/learning-paths">Paths</a><a routerLink="/board">Board</a><a routerLink="/import">Import</a><a routerLink="/ai-planner">AI Planner</a><a routerLink="/notifications">Notifications</a></nav></header><main class="shell"><router-outlet /></main>`})export class AppComponent{}

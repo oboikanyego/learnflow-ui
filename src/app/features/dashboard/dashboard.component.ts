@@ -1,9 +1,3 @@
-import { Component } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-
-@Component({
-  standalone: true,
-  imports: [MatCardModule],
-  template: `<section><h1>Learning dashboard</h1><p class="muted">Track scheduled, completed, missed and upcoming lessons.</p><div class="cards"><mat-card><mat-card-content><strong>0</strong><span>Completed</span></mat-card-content></mat-card><mat-card><mat-card-content><strong>0</strong><span>Scheduled</span></mat-card-content></mat-card><mat-card><mat-card-content><strong>0</strong><span>Missed</span></mat-card-content></mat-card></div></section>`
-})
-export class DashboardComponent {}
+import { Component,OnInit,inject,signal } from '@angular/core';import { ApiService } from '../../core/services/api.service';import { Analytics } from '../../models/learning.models';
+@Component({standalone:true,template:`<section><h1>Dashboard</h1><p class="muted">Your learning progress at a glance.</p>@if(stats();as s){<div class="stats"><article><strong>{{s.learningPaths}}</strong><span>Learning paths</span></article><article><strong>{{s.totalLessons}}</strong><span>Lessons</span></article><article><strong>{{s.completionRate}}%</strong><span>Completion</span></article><article><strong>{{s.completedHours}}h</strong><span>Completed hours</span></article><article><strong>{{s.currentStreakDays}}</strong><span>Day streak</span></article><article><strong>{{s.missedLessons}}</strong><span>Missed lessons</span></article></div>}@else{<p>Loading analytics…</p>}</section>`})
+export class DashboardComponent implements OnInit{private api=inject(ApiService);stats=signal<Analytics|null>(null);ngOnInit(){this.api.get<Analytics>('/api/v1/analytics').subscribe(v=>this.stats.set(v));}}
