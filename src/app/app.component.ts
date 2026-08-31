@@ -6,6 +6,7 @@ import { AuthService } from './core/auth/auth.service';
   selector: 'app-root',
   standalone: true,
   imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  styleUrl: './app.component.css',
   template: `
     @if (auth.isAuthenticated()) {
       <div class="jira-workspace">
