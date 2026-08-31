@@ -36,8 +36,8 @@ import { AuthService } from './core/auth/auth.service';
 
           <div class="sidebar-footer">
             <button type="button" class="sidebar-account" (click)="logout()">
-              <span class="account-avatar">BK</span>
-              <span><strong>Account</strong><small>Log out</small></span>
+              <span class="account-avatar">{{ accountInitials() }}</span>
+              <span><strong>{{ auth.user()?.name || 'Account' }}</strong><small>Log out</small></span>
               <span>↗</span>
             </button>
           </div>
@@ -61,8 +61,10 @@ import { AuthService } from './core/auth/auth.service';
           <span><strong>LearnFlow</strong><small>Learning operations</small></span>
         </a>
         <nav class="public-nav" aria-label="Public navigation">
-          <a routerLink="/" fragment="how-it-works">How it works</a>
-          <a routerLink="/login">Sign in</a>
+          <a routerLink="/">Home</a>
+          <a routerLink="/about" routerLinkActive="active">About us</a>
+          <a routerLink="/contact" routerLinkActive="active">Contact us</a>
+          <a routerLink="/login" class="header-login-action">Sign in</a>
           <a routerLink="/register" class="header-primary-action">Get started</a>
         </nav>
       </header>
@@ -77,5 +79,11 @@ export class AppComponent {
   logout(): void {
     this.auth.logout();
     void this.router.navigateByUrl('/');
+  }
+
+  accountInitials(): string {
+    const name = this.auth.user()?.name?.trim();
+    if (!name) return 'LF';
+    return name.split(/\s+/).slice(0, 2).map(part => part[0] ?? '').join('').toUpperCase();
   }
 }
