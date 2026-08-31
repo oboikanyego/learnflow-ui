@@ -1,8 +1,10 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/auth/auth.service';
 import { LoadingService } from './core/loading/loading.service';
 import { NotificationCenterService } from './core/notifications/notification-center.service';
+
+type NavGroup = 'workspace' | 'planning' | 'activity' | 'account' | 'admin';
 
 @Component({
   selector: 'app-root',
@@ -29,31 +31,73 @@ import { NotificationCenterService } from './core/notifications/notification-cen
           </div>
 
           <nav class="sidebar-nav" aria-label="Workspace navigation">
-            <span class="sidebar-label">Workspace</span>
-            <a routerLink="/dashboard" routerLinkActive="active"><span class="nav-icon">⌂</span><span>Dashboard</span></a>
-            <a routerLink="/board" routerLinkActive="active"><span class="nav-icon">▦</span><span>Board</span></a>
-            <a routerLink="/learning-paths" routerLinkActive="active"><span class="nav-icon">◆</span><span>Learning paths</span></a>
+            <section class="nav-group" [class.collapsed]="!groupOpen('workspace')">
+              <button type="button" class="nav-group-toggle" (click)="toggleGroup('workspace')" [attr.aria-expanded]="groupOpen('workspace')">
+                <span>Workspace</span><span class="group-chevron">⌄</span>
+              </button>
+              @if (groupOpen('workspace')) {
+                <div class="nav-group-links">
+                  <a routerLink="/dashboard" routerLinkActive="active"><span class="nav-icon">⌂</span><span>Dashboard</span></a>
+                  <a routerLink="/board" routerLinkActive="active"><span class="nav-icon">▦</span><span>Board</span></a>
+                  <a routerLink="/learning-paths" routerLinkActive="active"><span class="nav-icon">◆</span><span>Learning paths</span></a>
+                </div>
+              }
+            </section>
 
-            <span class="sidebar-label sidebar-label-spaced">AI & tools</span>
-            <a routerLink="/ai-planner" routerLinkActive="active"><span class="nav-icon">✦</span><span>AI planner</span></a>
-            <a routerLink="/ai-requests" routerLinkActive="active"><span class="nav-icon">☷</span><span>AI requests</span></a>
-            <a routerLink="/ai-coach" routerLinkActive="active"><span class="nav-icon">✺</span><span>AI coach</span></a>
-            <a routerLink="/import" routerLinkActive="active"><span class="nav-icon">⇧</span><span>Import</span></a>
-            <a routerLink="/notifications" routerLinkActive="active"><span class="nav-icon">◉</span><span>Notifications</span></a>
+            <section class="nav-group" [class.collapsed]="!groupOpen('planning')">
+              <button type="button" class="nav-group-toggle" (click)="toggleGroup('planning')" [attr.aria-expanded]="groupOpen('planning')">
+                <span>Plan & AI</span><span class="group-chevron">⌄</span>
+              </button>
+              @if (groupOpen('planning')) {
+                <div class="nav-group-links">
+                  <a routerLink="/ai-planner" routerLinkActive="active"><span class="nav-icon">✦</span><span>AI planner</span></a>
+                  <a routerLink="/import" routerLinkActive="active"><span class="nav-icon">⇧</span><span>Import plan</span></a>
+                  <a routerLink="/ai-coach" routerLinkActive="active"><span class="nav-icon">✺</span><span>AI coach</span></a>
+                  <a routerLink="/ai-requests" routerLinkActive="active"><span class="nav-icon">☷</span><span>AI requests</span></a>
+                </div>
+              }
+            </section>
+
+            <section class="nav-group" [class.collapsed]="!groupOpen('activity')">
+              <button type="button" class="nav-group-toggle" (click)="toggleGroup('activity')" [attr.aria-expanded]="groupOpen('activity')">
+                <span>Activity</span><span class="group-chevron">⌄</span>
+              </button>
+              @if (groupOpen('activity')) {
+                <div class="nav-group-links">
+                  <a routerLink="/notifications" routerLinkActive="active"><span class="nav-icon">◉</span><span>Notifications</span>@if (notifications.unreadCount() > 0) { <em class="sidebar-count">{{ notifications.unreadCount() > 99 ? '99+' : notifications.unreadCount() }}</em> }</a>
+                </div>
+              }
+            </section>
 
             @if (auth.user()?.role === 'admin') {
-              <span class="sidebar-label sidebar-label-spaced">Administration</span>
-              <a routerLink="/admin" routerLinkActive="active"><span class="nav-icon">◫</span><span>Admin overview</span></a>
+              <section class="nav-group admin-group" [class.collapsed]="!groupOpen('admin')">
+                <button type="button" class="nav-group-toggle" (click)="toggleGroup('admin')" [attr.aria-expanded]="groupOpen('admin')">
+                  <span>Administration</span><span class="group-chevron">⌄</span>
+                </button>
+                @if (groupOpen('admin')) {
+                  <div class="nav-group-links">
+                    <a routerLink="/admin" routerLinkActive="active"><span class="nav-icon">◫</span><span>Admin overview</span></a>
+                  </div>
+                }
+              </section>
             }
 
-            <span class="sidebar-label sidebar-label-spaced">Account</span>
-            <a routerLink="/settings" routerLinkActive="active"><span class="nav-icon">⚙</span><span>Settings</span></a>
+            <section class="nav-group" [class.collapsed]="!groupOpen('account')">
+              <button type="button" class="nav-group-toggle" (click)="toggleGroup('account')" [attr.aria-expanded]="groupOpen('account')">
+                <span>Account</span><span class="group-chevron">⌄</span>
+              </button>
+              @if (groupOpen('account')) {
+                <div class="nav-group-links">
+                  <a routerLink="/settings" routerLinkActive="active"><span class="nav-icon">⚙</span><span>Settings</span></a>
+                </div>
+              }
+            </section>
           </nav>
 
           <div class="sidebar-footer">
             <button type="button" class="sidebar-account" (click)="logout()">
               <span class="account-avatar">{{ accountInitials() }}</span>
-              <span><strong>{{ auth.user()?.name || 'Account' }}</strong><small>Log out</small></span>
+              <span><strong>{{ auth.user()?.name || 'Account' }}</strong><small>{{ auth.user()?.role === 'admin' ? 'Administrator' : 'Log out' }}</small></span>
               <span>↗</span>
             </button>
           </div>
@@ -105,12 +149,22 @@ export class AppComponent {
   readonly loading = inject(LoadingService);
   readonly notifications = inject(NotificationCenterService);
   private readonly router = inject(Router);
+  private readonly openGroups = signal<Record<NavGroup, boolean>>(this.loadNavState());
 
   constructor() {
     effect(() => {
       if (this.auth.isAuthenticated()) this.notifications.start();
       else this.notifications.stop();
     });
+  }
+
+  groupOpen(group: NavGroup): boolean { return this.openGroups()[group]; }
+
+  toggleGroup(group: NavGroup): void {
+    const current = this.openGroups();
+    const next = { ...current, [group]: !current[group] };
+    this.openGroups.set(next);
+    localStorage.setItem('learnflow_nav_groups', JSON.stringify(next));
   }
 
   logout(): void {
@@ -127,5 +181,13 @@ export class AppComponent {
     const name = this.auth.user()?.name?.trim();
     if (!name) return 'LF';
     return name.split(/\s+/).slice(0, 2).map(part => part[0] ?? '').join('').toUpperCase();
+  }
+
+  private loadNavState(): Record<NavGroup, boolean> {
+    const fallback: Record<NavGroup, boolean> = { workspace: true, planning: true, activity: true, account: false, admin: true };
+    try {
+      const saved = localStorage.getItem('learnflow_nav_groups');
+      return saved ? { ...fallback, ...JSON.parse(saved) } : fallback;
+    } catch { return fallback; }
   }
 }
