@@ -3,7 +3,22 @@ import { Injectable, computed, signal } from '@angular/core';
 import { tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-export interface AuthUser { id: string; name: string; email: string; role: string; timezone: string; }
+export interface NotificationPreferences {
+  inAppReminders: boolean;
+  emailReminders: boolean;
+  reminderMinutes: number;
+  missedSessionEmails: boolean;
+  celebrationEmails: boolean;
+}
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  timezone: string;
+  notificationPreferences?: NotificationPreferences;
+}
 export interface AuthResponse { token: string; user: AuthUser; }
 export interface ForgotPasswordResponse { message: string; resetUrl?: string; }
 export interface ResetPasswordResponse { message: string; }
@@ -37,6 +52,16 @@ export class AuthService {
 
   loadProfile() {
     return this.http.get<AuthUser>(`${environment.apiUrl}/api/v1/auth/me`).pipe(tap(user => this.userState.set(user)));
+  }
+
+  updateNotificationPreferences(preferences: NotificationPreferences) {
+    return this.http.patch<{ notificationPreferences: NotificationPreferences }>(
+      `${environment.apiUrl}/api/v1/auth/notification-preferences`,
+      preferences
+    ).pipe(tap(response => {
+      const current = this.userState();
+      if (current) this.userState.set({ ...current, notificationPreferences: response.notificationPreferences });
+    }));
   }
 
   logout(): void {
