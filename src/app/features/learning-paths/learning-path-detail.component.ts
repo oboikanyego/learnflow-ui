@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,7 +10,7 @@ import { ActionDialogComponent, ConfirmDialogComponent } from '../../shared/acti
 
 @Component({
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatDialogModule],
+  imports: [CommonModule, MatButtonModule, MatCardModule, MatDialogModule],
   template: `
     <section class="page-enter">
       <div class="page-head">
