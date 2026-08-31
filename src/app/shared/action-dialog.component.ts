@@ -4,8 +4,9 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
-export type ActionFieldType = 'text' | 'textarea' | 'number' | 'datetime-local';
+export type ActionFieldType = 'text' | 'textarea' | 'number' | 'datetime-local' | 'select';
 
 export interface ActionDialogField {
   key: string;
@@ -15,6 +16,7 @@ export interface ActionDialogField {
   required?: boolean;
   min?: number;
   hint?: string;
+  options?: Array<{ label: string; value: string | number }>;
 }
 
 export interface ActionDialogData {
@@ -28,7 +30,7 @@ export interface ActionDialogData {
 
 @Component({
   standalone: true,
-  imports: [FormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [FormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule],
   template: `
     <div class="dialog-shell">
       @if (data.eyebrow) { <span class="dialog-eyebrow">{{ data.eyebrow }}</span> }
@@ -41,6 +43,12 @@ export interface ActionDialogData {
             <mat-label>{{ field.label }}</mat-label>
             @if (field.type === 'textarea') {
               <textarea matInput rows="4" [(ngModel)]="values[field.key]" [required]="field.required ?? false"></textarea>
+            } @else if (field.type === 'select') {
+              <mat-select [(ngModel)]="values[field.key]" [required]="field.required ?? false">
+                @for (option of field.options ?? []; track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+              </mat-select>
             } @else {
               <input
                 matInput
@@ -56,12 +64,7 @@ export interface ActionDialogData {
 
       <mat-dialog-actions align="end" class="dialog-actions">
         <button mat-button type="button" (click)="dialogRef.close()">Cancel</button>
-        <button
-          mat-flat-button
-          type="button"
-          [class.danger-action]="data.destructive"
-          [disabled]="!isValid()"
-          (click)="submit()">
+        <button mat-flat-button type="button" [class.danger-action]="data.destructive" [disabled]="!isValid()" (click)="submit()">
           {{ data.submitLabel ?? 'Save' }}
         </button>
       </mat-dialog-actions>
