@@ -10,8 +10,10 @@ export interface AuthResponse { token: string; user: AuthUser; }
 export class AuthService {
   private readonly tokenKey = 'learnflow_access_token';
   private readonly userState = signal<AuthUser | null>(null);
+  private readonly tokenState = signal<string | null>(sessionStorage.getItem(this.tokenKey));
+
   readonly user = this.userState.asReadonly();
-  readonly isAuthenticated = computed(() => !!this.getToken());
+  readonly isAuthenticated = computed(() => !!this.tokenState());
 
   constructor(private readonly http: HttpClient) {}
 
@@ -27,11 +29,17 @@ export class AuthService {
     return this.http.get<AuthUser>(`${environment.apiUrl}/api/v1/auth/me`).pipe(tap(user => this.userState.set(user)));
   }
 
-  logout() { sessionStorage.removeItem(this.tokenKey); this.userState.set(null); }
-  getToken() { return sessionStorage.getItem(this.tokenKey); }
+  logout(): void {
+    sessionStorage.removeItem(this.tokenKey);
+    this.tokenState.set(null);
+    this.userState.set(null);
+  }
 
-  private persist(response: AuthResponse) {
+  getToken(): string | null { return this.tokenState(); }
+
+  private persist(response: AuthResponse): void {
     sessionStorage.setItem(this.tokenKey, response.token);
+    this.tokenState.set(response.token);
     this.userState.set(response.user);
   }
 }
