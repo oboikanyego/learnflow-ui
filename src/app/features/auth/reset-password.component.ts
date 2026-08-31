@@ -28,12 +28,12 @@ import { AuthService } from '../../core/auth/auth.service';
             <mat-form-field appearance="outline">
               <mat-label>New password</mat-label>
               <input matInput [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="new-password">
-              <button mat-button matSuffix type="button" class="password-toggle" (click)="showPassword.update(value => !value)">{{ showPassword() ? 'Hide' : 'Show' }}</button>
+              <button mat-button matSuffix type="button" class="password-toggle" (click)="togglePassword()">{{ showPassword() ? 'Hide' : 'Show' }}</button>
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Confirm password</mat-label>
               <input matInput [type]="showConfirmPassword() ? 'text' : 'password'" formControlName="confirmPassword" autocomplete="new-password">
-              <button mat-button matSuffix type="button" class="password-toggle" (click)="showConfirmPassword.update(value => !value)">{{ showConfirmPassword() ? 'Hide' : 'Show' }}</button>
+              <button mat-button matSuffix type="button" class="password-toggle" (click)="toggleConfirmPassword()">{{ showConfirmPassword() ? 'Hide' : 'Show' }}</button>
             </mat-form-field>
             @if (passwordMismatch()) { <p class="error">Passwords do not match.</p> }
             @if (error()) { <div class="error-box">{{ error() }}</div> }
@@ -64,6 +64,9 @@ export class ResetPasswordComponent {
       confirmPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(128)]]
     });
   }
+
+  togglePassword(): void { this.showPassword.set(!this.showPassword()); }
+  toggleConfirmPassword(): void { this.showConfirmPassword.set(!this.showConfirmPassword()); }
 
   passwordMismatch(): boolean {
     const { password, confirmPassword } = this.form.getRawValue();
