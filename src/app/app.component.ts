@@ -41,6 +41,11 @@ import { NotificationCenterService } from './core/notifications/notification-cen
             <a routerLink="/import" routerLinkActive="active"><span class="nav-icon">⇧</span><span>Import</span></a>
             <a routerLink="/notifications" routerLinkActive="active"><span class="nav-icon">◉</span><span>Notifications</span></a>
 
+            @if (auth.user()?.role === 'admin') {
+              <span class="sidebar-label sidebar-label-spaced">Administration</span>
+              <a routerLink="/admin" routerLinkActive="active"><span class="nav-icon">◫</span><span>Admin overview</span></a>
+            }
+
             <span class="sidebar-label sidebar-label-spaced">Account</span>
             <a routerLink="/settings" routerLinkActive="active"><span class="nav-icon">⚙</span><span>Settings</span></a>
           </nav>
