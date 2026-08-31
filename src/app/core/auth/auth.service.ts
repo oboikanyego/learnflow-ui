@@ -9,6 +9,7 @@ export interface NotificationPreferences {
   reminderMinutes: number;
   missedSessionEmails: boolean;
   celebrationEmails: boolean;
+  weeklyReviewEmails: boolean;
 }
 
 export interface Entitlement {
