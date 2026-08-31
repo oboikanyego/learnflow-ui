@@ -36,6 +36,7 @@ import { NotificationCenterService } from './core/notifications/notification-cen
 
             <span class="sidebar-label sidebar-label-spaced">AI & tools</span>
             <a routerLink="/ai-planner" routerLinkActive="active"><span class="nav-icon">✦</span><span>AI planner</span></a>
+            <a routerLink="/ai-requests" routerLinkActive="active"><span class="nav-icon">☷</span><span>AI requests</span></a>
             <a routerLink="/ai-coach" routerLinkActive="active"><span class="nav-icon">✺</span><span>AI coach</span></a>
             <a routerLink="/import" routerLinkActive="active"><span class="nav-icon">⇧</span><span>Import</span></a>
             <a routerLink="/notifications" routerLinkActive="active"><span class="nav-icon">◉</span><span>Notifications</span></a>
