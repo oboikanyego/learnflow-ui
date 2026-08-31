@@ -1,3 +1,103 @@
-import { Component,OnInit,inject,signal } from '@angular/core';import { FormsModule } from '@angular/forms';import { RouterLink } from '@angular/router';import { MatButtonModule } from '@angular/material/button';import { MatCardModule } from '@angular/material/card';import { MatFormFieldModule } from '@angular/material/form-field';import { MatInputModule } from '@angular/material/input';import { ApiService } from '../../core/services/api.service';import { LearningPath } from '../../models/learning.models';
-@Component({standalone:true,imports:[FormsModule,RouterLink,MatButtonModule,MatCardModule,MatFormFieldModule,MatInputModule],template:`<section><h1>Learning paths</h1><p class="muted">Create, import and manage your long-term learning goals.</p><div class="create-row"><mat-form-field><mat-label>Path title</mat-label><input matInput [(ngModel)]="title"></mat-form-field><mat-form-field><mat-label>Description</mat-label><input matInput [(ngModel)]="description"></mat-form-field><button mat-flat-button (click)="create()" [disabled]="!title.trim()">Create</button></div><div class="card-grid">@for(path of paths();track path._id){<mat-card><mat-card-content><h3>{{path.title}}</h3><p>{{path.description}}</p><span>{{path.status}}</span><div><a mat-button [routerLink]="['/learning-paths',path._id]">Open</a><button mat-button (click)="remove(path._id)">Delete</button></div></mat-card-content></mat-card>}@empty{<p>No learning paths yet.</p>}</div></section>`})
-export class LearningPathsComponent implements OnInit{private api=inject(ApiService);paths=signal<LearningPath[]>([]);title='';description='';ngOnInit(){this.load();}load(){this.api.get<LearningPath[]>('/api/v1/learning-paths').subscribe(v=>this.paths.set(v));}create(){this.api.post('/api/v1/learning-paths',{title:this.title,description:this.description}).subscribe(()=>{this.title='';this.description='';this.load();});}remove(id:string){this.api.delete(`/api/v1/learning-paths/${id}`).subscribe(()=>this.load());}}
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ApiService } from '../../core/services/api.service';
+import { LearningPath } from '../../models/learning.models';
+import { ActionDialogComponent, ConfirmDialogComponent } from '../../shared/action-dialog.component';
+
+@Component({
+  standalone: true,
+  imports: [RouterLink, MatButtonModule, MatCardModule, MatDialogModule],
+  template: `
+    <section class="page-enter">
+      <div class="page-head">
+        <div>
+          <span class="eyebrow">Learning portfolio</span>
+          <h1>Learning paths</h1>
+          <p class="muted">Create, organize and manage long-term learning outcomes.</p>
+        </div>
+        <button mat-flat-button class="primary-cta" (click)="openCreateDialog()">New learning path</button>
+      </div>
+
+      <div class="card-grid stagger-group">
+        @for (path of paths(); track path._id) {
+          <mat-card>
+            <mat-card-content>
+              <div class="page-head" style="margin-bottom:12px">
+                <span class="status-pill status-active">{{ path.status }}</span>
+                <span class="mini-label">Learning path</span>
+              </div>
+              <h3>{{ path.title }}</h3>
+              <p class="muted">{{ path.description || 'No description added yet.' }}</p>
+              <div class="lesson-actions" style="margin-top:18px">
+                <a mat-flat-button [routerLink]="['/learning-paths', path._id]">Open workspace</a>
+                <button mat-button (click)="confirmRemove(path)">Remove</button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        } @empty {
+          <div class="module">
+            <span class="eyebrow">Start here</span>
+            <h3>No learning paths yet</h3>
+            <p class="muted">Create your first learning path or import a structured plan from Excel.</p>
+            <button mat-flat-button class="primary-cta" (click)="openCreateDialog()">Create first path</button>
+          </div>
+        }
+      </div>
+    </section>
+  `
+})
+export class LearningPathsComponent implements OnInit {
+  private readonly api = inject(ApiService);
+  private readonly dialog = inject(MatDialog);
+  readonly paths = signal<LearningPath[]>([]);
+
+  ngOnInit(): void { this.load(); }
+
+  load(): void {
+    this.api.get<LearningPath[]>('/api/v1/learning-paths').subscribe(value => this.paths.set(value));
+  }
+
+  openCreateDialog(): void {
+    const ref = this.dialog.open(ActionDialogComponent, {
+      width: '560px',
+      data: {
+        eyebrow: 'New learning path',
+        title: 'Create a learning path',
+        description: 'Define the outcome you want to manage. You can build phases and lessons after creation.',
+        submitLabel: 'Create path',
+        fields: [
+          { key: 'title', label: 'Path title', type: 'text', required: true },
+          { key: 'description', label: 'Description', type: 'textarea', hint: 'Describe the outcome or capability you want to build.' }
+        ]
+      }
+    });
+
+    ref.afterClosed().subscribe(values => {
+      if (!values) return;
+      this.api.post('/api/v1/learning-paths', {
+        title: String(values.title).trim(),
+        description: String(values.description ?? '').trim()
+      }).subscribe(() => this.load());
+    });
+  }
+
+  confirmRemove(path: LearningPath): void {
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      width: '480px',
+      data: {
+        eyebrow: 'Remove learning path',
+        title: `Remove “${path.title}”?`,
+        description: 'This removes the learning path and its associated hierarchy from your workspace.',
+        confirmLabel: 'Remove path',
+        destructive: true
+      }
+    });
+
+    ref.afterClosed().subscribe(confirmed => {
+      if (confirmed) this.api.delete(`/api/v1/learning-paths/${path._id}`).subscribe(() => this.load());
+    });
+  }
+}
