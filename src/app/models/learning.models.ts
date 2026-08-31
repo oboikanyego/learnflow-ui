@@ -4,4 +4,9 @@ export interface LessonComment{_id:string;lessonId:string;authorId:string;author
 export interface LearningModule{_id:string;title:string;description?:string;position:number;lessons:Lesson[];}
 export interface Phase{_id:string;title:string;description?:string;position:number;modules:LearningModule[];}
 export interface LearningPath{_id:string;title:string;description?:string;status:string;}
-export interface Analytics{learningPaths:number;totalLessons:number;completedLessons:number;missedLessons:number;scheduledLessons:number;completionRate:number;completedHours:number;currentStreakDays:number;}
+export interface Analytics{
+  learningPaths:number;totalLessons:number;completedLessons:number;missedLessons:number;scheduledLessons:number;completionRate:number;completedHours:number;currentStreakDays:number;
+  statusBreakdown:Array<{status:LessonStatus;count:number}>;
+  weeklyCompletions:Array<{weekStart:string;label:string;completed:number;hours:number}>;
+  nextLessons:Array<{_id:string;title:string;scheduledAt?:string;durationMinutes:number}>;
+}
