@@ -7,6 +7,8 @@ export const routes: Routes = [
   { path: 'contact', loadComponent: () => import('./features/contact/contact.component').then(m => m.ContactComponent) },
   { path: 'login', loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent) },
   { path: 'register', loadComponent: () => import('./features/auth/register.component').then(m => m.RegisterComponent) },
+  { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password.component').then(m => m.ForgotPasswordComponent) },
+  { path: 'reset-password', loadComponent: () => import('./features/auth/reset-password.component').then(m => m.ResetPasswordComponent) },
   { path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
   { path: 'learning-paths', canActivate: [authGuard], loadComponent: () => import('./features/learning-paths/learning-paths.component').then(m => m.LearningPathsComponent) },
   { path: 'learning-paths/:id', canActivate: [authGuard], loadComponent: () => import('./features/learning-paths/learning-path-detail.component').then(m => m.LearningPathDetailComponent) },
