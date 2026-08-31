@@ -33,9 +33,14 @@ export interface ActionDialogData {
   imports: [FormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule],
   template: `
     <div class="dialog-shell">
-      @if (data.eyebrow) { <span class="dialog-eyebrow">{{ data.eyebrow }}</span> }
-      <h2 mat-dialog-title>{{ data.title }}</h2>
-      @if (data.description) { <p class="dialog-copy">{{ data.description }}</p> }
+      <div class="dialog-header">
+        <span class="dialog-icon" [class.destructive]="data.destructive">{{ data.destructive ? '!' : '✦' }}</span>
+        <div class="dialog-heading">
+          @if (data.eyebrow) { <span class="dialog-eyebrow">{{ data.eyebrow }}</span> }
+          <h2 mat-dialog-title>{{ data.title }}</h2>
+          @if (data.description) { <p class="dialog-copy">{{ data.description }}</p> }
+        </div>
+      </div>
       <mat-dialog-content class="dialog-content">
         @for (field of data.fields; track field.key) {
           <mat-form-field appearance="outline" class="dialog-field">
@@ -53,9 +58,9 @@ export interface ActionDialogData {
           </mat-form-field>
         }
       </mat-dialog-content>
-      <mat-dialog-actions align="end" class="dialog-actions">
-        <button mat-button type="button" (click)="dialogRef.close()">Cancel</button>
-        <button mat-flat-button type="button" [class.danger-action]="data.destructive" [disabled]="!isValid()" (click)="submit()">{{ data.submitLabel ?? 'Save' }}</button>
+      <mat-dialog-actions class="dialog-actions">
+        <button mat-stroked-button type="button" (click)="dialogRef.close()">Cancel</button>
+        <button mat-flat-button type="button" [class.danger-action]="data.destructive" [disabled]="!isValid()" (click)="submit()">{{ data.submitLabel ?? 'Save changes' }}</button>
       </mat-dialog-actions>
     </div>
   `
@@ -76,11 +81,19 @@ export interface ConfirmDialogData { eyebrow?: string; title: string; descriptio
   imports: [MatDialogModule, MatButtonModule],
   template: `
     <div class="dialog-shell confirm-dialog">
-      @if (data.eyebrow) { <span class="dialog-eyebrow">{{ data.eyebrow }}</span> }
-      <h2 mat-dialog-title>{{ data.title }}</h2>
-      <p class="dialog-copy">{{ data.description }}</p>
-      <mat-dialog-actions align="end" class="dialog-actions">
-        <button mat-button type="button" (click)="dialogRef.close(false)">Cancel</button>
+      <div class="dialog-header">
+        <span class="dialog-icon" [class.destructive]="data.destructive">{{ data.destructive ? '!' : '?' }}</span>
+        <div class="dialog-heading">
+          @if (data.eyebrow) { <span class="dialog-eyebrow">{{ data.eyebrow }}</span> }
+          <h2 mat-dialog-title>{{ data.title }}</h2>
+          <p class="dialog-copy">{{ data.description }}</p>
+        </div>
+      </div>
+      @if (data.destructive) {
+        <div class="dialog-warning"><span>⚠</span><div><strong>This action cannot be undone.</strong><br>Only continue if you are sure you no longer need this item.</div></div>
+      }
+      <mat-dialog-actions class="dialog-actions">
+        <button mat-stroked-button type="button" (click)="dialogRef.close(false)">Keep it</button>
         <button mat-flat-button type="button" [class.danger-action]="data.destructive" (click)="dialogRef.close(true)">{{ data.confirmLabel ?? 'Confirm' }}</button>
       </mat-dialog-actions>
     </div>
