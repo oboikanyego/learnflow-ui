@@ -29,7 +29,7 @@ import { AuthService } from '../../core/auth/auth.service';
           <mat-form-field appearance="outline">
             <mat-label>Password</mat-label>
             <input matInput [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="new-password">
-            <button mat-button matSuffix type="button" class="password-toggle" (click)="showPassword.update(value => !value)">{{ showPassword() ? 'Hide' : 'Show' }}</button>
+            <button mat-button matSuffix type="button" class="password-toggle" (click)="togglePassword()">{{ showPassword() ? 'Hide' : 'Show' }}</button>
           </mat-form-field>
           @if (error()) { <p class="error">{{ error() }}</p> }
           <button mat-flat-button class="primary-cta" type="submit" [disabled]="form.invalid || loading()">{{ loading() ? 'Creating account…' : 'Create account' }}</button>
@@ -59,6 +59,8 @@ export class RegisterComponent {
       password: ['', [Validators.required, Validators.minLength(8)]]
     });
   }
+
+  togglePassword(): void { this.showPassword.set(!this.showPassword()); }
 
   submit(): void {
     if (this.form.invalid) return;
