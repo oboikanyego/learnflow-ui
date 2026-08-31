@@ -40,6 +40,9 @@ import { NotificationCenterService } from './core/notifications/notification-cen
             <a routerLink="/ai-coach" routerLinkActive="active"><span class="nav-icon">✺</span><span>AI coach</span></a>
             <a routerLink="/import" routerLinkActive="active"><span class="nav-icon">⇧</span><span>Import</span></a>
             <a routerLink="/notifications" routerLinkActive="active"><span class="nav-icon">◉</span><span>Notifications</span></a>
+
+            <span class="sidebar-label sidebar-label-spaced">Account</span>
+            <a routerLink="/settings" routerLinkActive="active"><span class="nav-icon">⚙</span><span>Settings</span></a>
           </nav>
 
           <div class="sidebar-footer">
