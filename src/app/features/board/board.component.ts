@@ -5,44 +5,63 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ApiService } from '../../core/services/api.service';
 import { LearningPath, Phase, Lesson, LessonStatus } from '../../models/learning.models';
 import { ActionDialogComponent } from '../../shared/action-dialog.component';
+import { LessonDetailDialogComponent } from './lesson-detail-dialog.component';
 
 @Component({
   standalone: true,
   imports: [FormsModule, MatButtonModule, MatDialogModule],
   template: `
-    <section class="page-enter">
-      <div class="page-head">
+    <section class="page-enter board-page">
+      <div class="page-head board-toolbar">
         <div>
           <span class="eyebrow">Execution workspace</span>
           <h1>Learning board</h1>
-          <p class="muted">Move lessons through a clear Jira-inspired workflow and keep scheduled work visible.</p>
+          <p class="muted">Open any lesson to review its details, add comments and keep progress moving.</p>
         </div>
-        <select [(ngModel)]="selectedPath" (change)="loadBoard()" aria-label="Select learning path">
-          <option value="">Select learning path</option>
-          @for (path of paths(); track path._id) { <option [value]="path._id">{{ path.title }}</option> }
-        </select>
+        <div class="board-controls">
+          <span class="board-count">{{ allLessons().length }} items</span>
+          <select [(ngModel)]="selectedPath" (change)="loadBoard()" aria-label="Select learning path">
+            <option value="">Select learning path</option>
+            @for (path of paths(); track path._id) { <option [value]="path._id">{{ path.title }}</option> }
+          </select>
+        </div>
       </div>
 
-      <div class="board">
-        @for (status of statuses; track status) {
-          <div class="column">
-            <h3>{{ label(status) }} <span>{{ byStatus(status).length }}</span></h3>
-            @for (lesson of byStatus(status); track lesson._id) {
-              <article class="ticket">
-                <span class="mini-label">{{ label(lesson.status) }}</span>
-                <strong>{{ lesson.title }}</strong>
-                <small>{{ lesson.durationMinutes }} min</small>
-                @if (lesson.scheduledAt) { <small>{{ lesson.scheduledAt }}</small> }
-                <div class="lesson-actions">
-                  <button mat-button (click)="openStatusDialog(lesson)">Update</button>
-                  <button mat-button (click)="openScheduleDialog(lesson)">{{ lesson.status === 'MISSED' ? 'Reschedule' : 'Schedule' }}</button>
-                </div>
-              </article>
-            } @empty {
-              <p class="muted">No lessons</p>
-            }
-          </div>
-        }
+      <div class="board-scroll-shell">
+        <div class="board-scroll-hint"><span>Scroll horizontally to explore the workflow</span><span aria-hidden="true">→</span></div>
+        <div class="board vibrant-board">
+          @for (status of statuses; track status) {
+            <div class="column column-{{ status.toLowerCase() }}">
+              <div class="column-head">
+                <div class="column-title"><span class="status-dot"></span><h3>{{ label(status) }}</h3></div>
+                <span class="column-count">{{ byStatus(status).length }}</span>
+              </div>
+
+              <div class="column-items">
+                @for (lesson of byStatus(status); track lesson._id) {
+                  <article class="ticket issue-ticket" tabindex="0" (click)="openLesson(lesson)" (keydown.enter)="openLesson(lesson)">
+                    <div class="ticket-topline">
+                      <span class="issue-id">LF-{{ shortId(lesson._id) }}</span>
+                      <span class="priority-pill">{{ lesson.durationMinutes }}m</span>
+                    </div>
+                    <strong>{{ lesson.title }}</strong>
+                    @if (lesson.description) { <p>{{ lesson.description }}</p> }
+                    <div class="ticket-meta">
+                      <span>{{ lesson.scheduledAt ? formatDate(lesson.scheduledAt) : 'Unscheduled' }}</span>
+                      <span class="ticket-status">{{ label(lesson.status) }}</span>
+                    </div>
+                    <div class="ticket-actions" (click)="$event.stopPropagation()">
+                      <button mat-button (click)="openStatusDialog(lesson)">Status</button>
+                      <button mat-button (click)="openScheduleDialog(lesson)">{{ lesson.status === 'MISSED' ? 'Reschedule' : 'Schedule' }}</button>
+                    </div>
+                  </article>
+                } @empty {
+                  <div class="column-empty"><span>＋</span><p>No lessons in this stage</p></div>
+                }
+              </div>
+            </div>
+          }
+        </div>
       </div>
     </section>
   `
@@ -70,6 +89,18 @@ export class BoardComponent implements OnInit {
   allLessons(): Lesson[] { return this.phases().flatMap(phase => phase.modules.flatMap(module => module.lessons)); }
   byStatus(status: LessonStatus): Lesson[] { return this.allLessons().filter(lesson => lesson.status === status); }
   label(status: LessonStatus): string { return status.replaceAll('_', ' ').toLowerCase(); }
+  shortId(id: string): string { return id.slice(-6).toUpperCase(); }
+  formatDate(value: string): string { return new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value)); }
+
+  openLesson(lesson: Lesson): void {
+    this.dialog.open(LessonDetailDialogComponent, {
+      width: 'min(980px, 96vw)',
+      maxWidth: '96vw',
+      maxHeight: '92vh',
+      panelClass: 'issue-detail-dialog',
+      data: { lesson }
+    });
+  }
 
   openStatusDialog(lesson: Lesson): void {
     const ref = this.dialog.open(ActionDialogComponent, {
@@ -77,15 +108,10 @@ export class BoardComponent implements OnInit {
       data: {
         eyebrow: 'Lesson update', title: `Update “${lesson.title}”`,
         description: 'Choose the workflow state that best represents this lesson.', submitLabel: 'Update lesson',
-        fields: [{
-          key: 'status', label: 'Status', type: 'select', value: lesson.status, required: true,
-          options: this.statuses.map(status => ({ label: status.replaceAll('_', ' '), value: status }))
-        }]
+        fields: [{ key: 'status', label: 'Status', type: 'select', value: lesson.status, required: true, options: this.statuses.map(status => ({ label: status.replaceAll('_', ' '), value: status })) }]
       }
     });
-    ref.afterClosed().subscribe(values => {
-      if (values?.status) this.api.patch(`/api/v1/lessons/${lesson._id}`, { status: values.status }).subscribe(() => this.loadBoard());
-    });
+    ref.afterClosed().subscribe(values => { if (values?.status) this.api.patch(`/api/v1/lessons/${lesson._id}`, { status: values.status }).subscribe(() => this.loadBoard()); });
   }
 
   openScheduleDialog(lesson: Lesson): void {
@@ -100,9 +126,7 @@ export class BoardComponent implements OnInit {
     });
     ref.afterClosed().subscribe(values => {
       if (!values?.scheduledAt) return;
-      this.api.patch(`/api/v1/lessons/${lesson._id}`, {
-        scheduledAt: new Date(String(values.scheduledAt)).toISOString(), status: 'SCHEDULED'
-      }).subscribe(() => this.loadBoard());
+      this.api.patch(`/api/v1/lessons/${lesson._id}`, { scheduledAt: new Date(String(values.scheduledAt)).toISOString(), status: 'SCHEDULED' }).subscribe(() => this.loadBoard());
     });
   }
 
