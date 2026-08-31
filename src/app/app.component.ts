@@ -32,9 +32,7 @@ type NavGroup = 'workspace' | 'planning' | 'activity' | 'account' | 'admin';
 
           <nav class="sidebar-nav" aria-label="Workspace navigation">
             <section class="nav-group" [class.collapsed]="!groupOpen('workspace')">
-              <button type="button" class="nav-group-toggle" (click)="toggleGroup('workspace')" [attr.aria-expanded]="groupOpen('workspace')">
-                <span>Workspace</span><span class="group-chevron">⌄</span>
-              </button>
+              <button type="button" class="nav-group-toggle" (click)="toggleGroup('workspace')" [attr.aria-expanded]="groupOpen('workspace')"><span>Workspace</span><span class="group-chevron">⌄</span></button>
               @if (groupOpen('workspace')) {
                 <div class="nav-group-links">
                   <a routerLink="/dashboard" routerLinkActive="active"><span class="nav-icon">⌂</span><span>Dashboard</span></a>
@@ -45,23 +43,20 @@ type NavGroup = 'workspace' | 'planning' | 'activity' | 'account' | 'admin';
             </section>
 
             <section class="nav-group" [class.collapsed]="!groupOpen('planning')">
-              <button type="button" class="nav-group-toggle" (click)="toggleGroup('planning')" [attr.aria-expanded]="groupOpen('planning')">
-                <span>Plan & AI</span><span class="group-chevron">⌄</span>
-              </button>
+              <button type="button" class="nav-group-toggle" (click)="toggleGroup('planning')" [attr.aria-expanded]="groupOpen('planning')"><span>Plan & AI</span><span class="group-chevron">⌄</span></button>
               @if (groupOpen('planning')) {
                 <div class="nav-group-links">
                   <a routerLink="/ai-planner" routerLinkActive="active"><span class="nav-icon">✦</span><span>AI planner</span></a>
                   <a routerLink="/import" routerLinkActive="active"><span class="nav-icon">⇧</span><span>Import plan</span></a>
                   <a routerLink="/ai-coach" routerLinkActive="active"><span class="nav-icon">✺</span><span>AI coach</span></a>
                   <a routerLink="/ai-requests" routerLinkActive="active"><span class="nav-icon">☷</span><span>AI requests</span></a>
+                  <a routerLink="/ai-usage" routerLinkActive="active"><span class="nav-icon">◔</span><span>AI usage</span></a>
                 </div>
               }
             </section>
 
             <section class="nav-group" [class.collapsed]="!groupOpen('activity')">
-              <button type="button" class="nav-group-toggle" (click)="toggleGroup('activity')" [attr.aria-expanded]="groupOpen('activity')">
-                <span>Activity</span><span class="group-chevron">⌄</span>
-              </button>
+              <button type="button" class="nav-group-toggle" (click)="toggleGroup('activity')" [attr.aria-expanded]="groupOpen('activity')"><span>Activity</span><span class="group-chevron">⌄</span></button>
               @if (groupOpen('activity')) {
                 <div class="nav-group-links">
                   <a routerLink="/notifications" routerLinkActive="active"><span class="nav-icon">◉</span><span>Notifications</span>@if (notifications.unreadCount() > 0) { <em class="sidebar-count">{{ notifications.unreadCount() > 99 ? '99+' : notifications.unreadCount() }}</em> }</a>
@@ -71,25 +66,17 @@ type NavGroup = 'workspace' | 'planning' | 'activity' | 'account' | 'admin';
 
             @if (auth.user()?.role === 'admin') {
               <section class="nav-group admin-group" [class.collapsed]="!groupOpen('admin')">
-                <button type="button" class="nav-group-toggle" (click)="toggleGroup('admin')" [attr.aria-expanded]="groupOpen('admin')">
-                  <span>Administration</span><span class="group-chevron">⌄</span>
-                </button>
+                <button type="button" class="nav-group-toggle" (click)="toggleGroup('admin')" [attr.aria-expanded]="groupOpen('admin')"><span>Administration</span><span class="group-chevron">⌄</span></button>
                 @if (groupOpen('admin')) {
-                  <div class="nav-group-links">
-                    <a routerLink="/admin" routerLinkActive="active"><span class="nav-icon">◫</span><span>Admin overview</span></a>
-                  </div>
+                  <div class="nav-group-links"><a routerLink="/admin" routerLinkActive="active"><span class="nav-icon">◫</span><span>Admin overview</span></a></div>
                 }
               </section>
             }
 
             <section class="nav-group" [class.collapsed]="!groupOpen('account')">
-              <button type="button" class="nav-group-toggle" (click)="toggleGroup('account')" [attr.aria-expanded]="groupOpen('account')">
-                <span>Account</span><span class="group-chevron">⌄</span>
-              </button>
+              <button type="button" class="nav-group-toggle" (click)="toggleGroup('account')" [attr.aria-expanded]="groupOpen('account')"><span>Account</span><span class="group-chevron">⌄</span></button>
               @if (groupOpen('account')) {
-                <div class="nav-group-links">
-                  <a routerLink="/settings" routerLinkActive="active"><span class="nav-icon">⚙</span><span>Settings</span></a>
-                </div>
+                <div class="nav-group-links"><a routerLink="/settings" routerLinkActive="active"><span class="nav-icon">⚙</span><span>Settings</span></a></div>
               }
             </section>
           </nav>
@@ -107,10 +94,7 @@ type NavGroup = 'workspace' | 'planning' | 'activity' | 'account' | 'admin';
           <header class="workspace-topbar">
             <div class="workspace-breadcrumb"><span>LearnFlow</span><span>/</span><strong>Workspace</strong></div>
             <div class="topbar-actions">
-              <a routerLink="/notifications" class="topbar-icon notification-icon" aria-label="Notifications">
-                ◉
-                @if (notifications.unreadCount() > 0) { <span class="notification-badge">{{ notifications.unreadCount() > 99 ? '99+' : notifications.unreadCount() }}</span> }
-              </a>
+              <a routerLink="/notifications" class="topbar-icon notification-icon" aria-label="Notifications">◉@if (notifications.unreadCount() > 0) { <span class="notification-badge">{{ notifications.unreadCount() > 99 ? '99+' : notifications.unreadCount() }}</span> }</a>
               <a routerLink="/ai-planner" class="create-work-item">＋ Create lesson plan</a>
             </div>
           </header>
@@ -128,16 +112,9 @@ type NavGroup = 'workspace' | 'planning' | 'activity' | 'account' | 'admin';
       }
     } @else {
       <header class="app-header public-header">
-        <a routerLink="/" class="brand-lockup" aria-label="LearnFlow home">
-          <span class="brand-mark">LF</span>
-          <span><strong>LearnFlow</strong><small>Learning operations</small></span>
-        </a>
+        <a routerLink="/" class="brand-lockup" aria-label="LearnFlow home"><span class="brand-mark">LF</span><span><strong>LearnFlow</strong><small>Learning operations</small></span></a>
         <nav class="public-nav" aria-label="Public navigation">
-          <a routerLink="/">Home</a>
-          <a routerLink="/about" routerLinkActive="active">About us</a>
-          <a routerLink="/contact" routerLinkActive="active">Contact us</a>
-          <a routerLink="/login" class="header-login-action">Sign in</a>
-          <a routerLink="/register" class="header-primary-action">Get started</a>
+          <a routerLink="/">Home</a><a routerLink="/about" routerLinkActive="active">About us</a><a routerLink="/contact" routerLinkActive="active">Contact us</a><a routerLink="/login" class="header-login-action">Sign in</a><a routerLink="/register" class="header-primary-action">Get started</a>
         </nav>
       </header>
       <main class="shell public-shell"><router-outlet /></main>
@@ -152,42 +129,23 @@ export class AppComponent {
   private readonly openGroups = signal<Record<NavGroup, boolean>>(this.loadNavState());
 
   constructor() {
-    effect(() => {
-      if (this.auth.isAuthenticated()) this.notifications.start();
-      else this.notifications.stop();
-    });
+    effect(() => { if (this.auth.isAuthenticated()) this.notifications.start(); else this.notifications.stop(); });
   }
 
   groupOpen(group: NavGroup): boolean { return this.openGroups()[group]; }
-
   toggleGroup(group: NavGroup): void {
-    const current = this.openGroups();
-    const next = { ...current, [group]: !current[group] };
-    this.openGroups.set(next);
-    localStorage.setItem('learnflow_nav_groups', JSON.stringify(next));
+    const current = this.openGroups(); const next = { ...current, [group]: !current[group] };
+    this.openGroups.set(next); localStorage.setItem('learnflow_nav_groups', JSON.stringify(next));
   }
-
-  logout(): void {
-    this.auth.logout();
-    void this.router.navigateByUrl('/');
-  }
-
-  openNotification(actionUrl: string): void {
-    this.notifications.dismissToast();
-    void this.router.navigateByUrl(actionUrl);
-  }
-
+  logout(): void { this.auth.logout(); void this.router.navigateByUrl('/'); }
+  openNotification(actionUrl: string): void { this.notifications.dismissToast(); void this.router.navigateByUrl(actionUrl); }
   accountInitials(): string {
-    const name = this.auth.user()?.name?.trim();
-    if (!name) return 'LF';
+    const name = this.auth.user()?.name?.trim(); if (!name) return 'LF';
     return name.split(/\s+/).slice(0, 2).map(part => part[0] ?? '').join('').toUpperCase();
   }
-
   private loadNavState(): Record<NavGroup, boolean> {
     const fallback: Record<NavGroup, boolean> = { workspace: true, planning: true, activity: true, account: false, admin: true };
-    try {
-      const saved = localStorage.getItem('learnflow_nav_groups');
-      return saved ? { ...fallback, ...JSON.parse(saved) } : fallback;
-    } catch { return fallback; }
+    try { const saved = localStorage.getItem('learnflow_nav_groups'); return saved ? { ...fallback, ...JSON.parse(saved) } : fallback; }
+    catch { return fallback; }
   }
 }
