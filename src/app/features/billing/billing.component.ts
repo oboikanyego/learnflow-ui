@@ -42,11 +42,11 @@ interface CheckoutResponse{provider:string;checkoutUrl:string;reference:string;i
         <div class="billing-grid">
           <article class="plan-card current"><div class="plan-head"><div><span class="mini-label">Current plan</span><h2>{{d.effectivePlan}}</h2></div><span class="status-pill">{{d.entitlementStatus}}</span></div>
             <p>{{d.effectivePlan==='PRO'?'Higher AI allowances and Pro capabilities are enabled while your entitlement is active.':'Core learning planning, reminders, board and standard AI allowances are included.'}}</p>
-            @if(d.subscription){<dl><div><dt>Subscription status</dt><dd>{{d.subscription.status}}</dd></div><div><dt>Provider</dt><dd>{{d.subscription.provider}}</dd></div><div><dt>Billing interval</dt><dd>{{d.subscription.billingInterval}}</dd></div><div><dt>Amount</dt><dd>{{money(d.subscription.amountMinor,d.subscription.currency)}}</dd></div><div><dt>Next billing</dt><dd>{{date(d.subscription.nextBillingAt||d.subscription.currentPeriodEnd)}}</dd></div>@if(d.subscription.graceEndsAt){<div><dt>Grace deadline</dt><dd>{{dateTime(d.subscription.graceEndsAt)}}</dd></div>}</dl>}
+            @if(d.subscription;as subscription){<dl><div><dt>Subscription status</dt><dd>{{subscription.status}}</dd></div><div><dt>Provider</dt><dd>{{subscription.provider}}</dd></div><div><dt>Billing interval</dt><dd>{{subscription.billingInterval}}</dd></div><div><dt>Amount</dt><dd>{{money(subscription.amountMinor,subscription.currency)}}</dd></div><div><dt>Next billing</dt><dd>{{date(subscription.nextBillingAt||subscription.currentPeriodEnd)}}</dd></div>@if(subscription.graceEndsAt){<div><dt>Grace deadline</dt><dd>{{dateTime(subscription.graceEndsAt)}}</dd></div>}</dl>}
             @if(d.entitlementStatus==='GRACE'){
               <div class="provider-note"><strong>Payment needs attention</strong><span>Pro access remains available until {{dateTime(d.entitlementEndsAt||d.subscription?.graceEndsAt)}}. If payment recovers before then, your plan returns to active automatically.</span></div>
-            }@else if(d.subscription?.graceExpiredAt&&d.effectivePlan==='FREE'){
-              <div class="provider-note danger"><strong>Grace period expired</strong><span>Pro access ended on {{dateTime(d.subscription.graceExpiredAt)}} because payment was not recovered in time.</span></div>
+            }@else if(d.subscription?.graceExpiredAt;as graceExpiredAt){
+              @if(d.effectivePlan==='FREE'){<div class="provider-note danger"><strong>Grace period expired</strong><span>Pro access ended on {{dateTime(graceExpiredAt)}} because payment was not recovered in time.</span></div>}
             }
           </article>
           <article class="plan-card pro"><div class="plan-head"><div><span class="mini-label">Upgrade option</span><h2>LearnFlow Pro</h2></div><strong>{{money(d.catalog.plans.PRO.monthlyAmountMinor,d.catalog.currency)}}<small>/month</small></strong></div>
