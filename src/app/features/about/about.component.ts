@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   standalone: true,
   imports: [RouterLink, MatButtonModule],
+  styleUrl: './about.component.css',
   template: `
     <section class="public-info-page page-enter">
       <div class="public-info-hero">
