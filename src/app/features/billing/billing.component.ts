@@ -17,6 +17,8 @@ interface Subscription {
   currency:string;
   currentPeriodEnd?:string;
   nextBillingAt?:string;
+  graceEndsAt?:string;
+  graceExpiredAt?:string;
   cancelAtPeriodEnd:boolean;
   provider:string;
 }
@@ -40,7 +42,12 @@ interface CheckoutResponse{provider:string;checkoutUrl:string;reference:string;i
         <div class="billing-grid">
           <article class="plan-card current"><div class="plan-head"><div><span class="mini-label">Current plan</span><h2>{{d.effectivePlan}}</h2></div><span class="status-pill">{{d.entitlementStatus}}</span></div>
             <p>{{d.effectivePlan==='PRO'?'Higher AI allowances and Pro capabilities are enabled while your entitlement is active.':'Core learning planning, reminders, board and standard AI allowances are included.'}}</p>
-            @if(d.subscription){<dl><div><dt>Subscription status</dt><dd>{{d.subscription.status}}</dd></div><div><dt>Provider</dt><dd>{{d.subscription.provider}}</dd></div><div><dt>Billing interval</dt><dd>{{d.subscription.billingInterval}}</dd></div><div><dt>Amount</dt><dd>{{money(d.subscription.amountMinor,d.subscription.currency)}}</dd></div><div><dt>Next billing</dt><dd>{{date(d.subscription.nextBillingAt||d.subscription.currentPeriodEnd)}}</dd></div></dl>}
+            @if(d.subscription){<dl><div><dt>Subscription status</dt><dd>{{d.subscription.status}}</dd></div><div><dt>Provider</dt><dd>{{d.subscription.provider}}</dd></div><div><dt>Billing interval</dt><dd>{{d.subscription.billingInterval}}</dd></div><div><dt>Amount</dt><dd>{{money(d.subscription.amountMinor,d.subscription.currency)}}</dd></div><div><dt>Next billing</dt><dd>{{date(d.subscription.nextBillingAt||d.subscription.currentPeriodEnd)}}</dd></div>@if(d.subscription.graceEndsAt){<div><dt>Grace deadline</dt><dd>{{dateTime(d.subscription.graceEndsAt)}}</dd></div>}</dl>}
+            @if(d.entitlementStatus==='GRACE'){
+              <div class="provider-note"><strong>Payment needs attention</strong><span>Pro access remains available until {{dateTime(d.entitlementEndsAt||d.subscription?.graceEndsAt)}}. If payment recovers before then, your plan returns to active automatically.</span></div>
+            }@else if(d.subscription?.graceExpiredAt&&d.effectivePlan==='FREE'){
+              <div class="provider-note danger"><strong>Grace period expired</strong><span>Pro access ended on {{dateTime(d.subscription.graceExpiredAt)}} because payment was not recovered in time.</span></div>
+            }
           </article>
           <article class="plan-card pro"><div class="plan-head"><div><span class="mini-label">Upgrade option</span><h2>LearnFlow Pro</h2></div><strong>{{money(d.catalog.plans.PRO.monthlyAmountMinor,d.catalog.currency)}}<small>/month</small></strong></div>
             <ul><li>20 AI planner generations per day</li><li>100 AI coach requests per day</li><li>Advanced analytics entitlement</li><li>Priority AI queue capability</li><li>Weekly progress email capability</li></ul>
@@ -60,7 +67,7 @@ interface CheckoutResponse{provider:string;checkoutUrl:string;reference:string;i
     </section>
   `,
   styles:[`
-    .billing-page{max-width:1100px;margin:0 auto}.billing-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.plan-card{background:#fff;border:1px solid #dfe5ed;border-radius:20px;padding:24px}.plan-card.pro{background:linear-gradient(145deg,#f8fbff,#fff)}.plan-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.plan-head h2{margin:4px 0 8px;color:#10233f;font-size:1.65rem}.plan-head>strong{color:#10233f;font-size:1.35rem}.plan-head small{font-size:.68rem;color:#7a869a}.status-pill{padding:6px 9px;border-radius:999px;background:#e6f4ea;color:#216e4e;font-size:.68rem;font-weight:850}.plan-card p,.plan-card li{color:#66758a;line-height:1.6}.plan-card ul{padding-left:20px}.plan-card dl{margin:22px 0 0}.plan-card dl div{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid #edf1f5}.plan-card dt{color:#7a869a}.plan-card dd{margin:0;color:#10233f;font-weight:750}.billing-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.provider-note,.billing-message,.billing-error{margin-top:18px;padding:14px;border-radius:12px}.provider-note{display:flex;flex-direction:column;background:#fff7e6;color:#7a4d00}.provider-note span{font-size:.76rem;margin-top:3px}.billing-message{background:#eaf3ff;color:#174ea6}.billing-error{background:#fff1f0;color:#a61b1b}@media(max-width:800px){.billing-grid{grid-template-columns:1fr}}
+    .billing-page{max-width:1100px;margin:0 auto}.billing-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.plan-card{background:#fff;border:1px solid #dfe5ed;border-radius:20px;padding:24px}.plan-card.pro{background:linear-gradient(145deg,#f8fbff,#fff)}.plan-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.plan-head h2{margin:4px 0 8px;color:#10233f;font-size:1.65rem}.plan-head>strong{color:#10233f;font-size:1.35rem}.plan-head small{font-size:.68rem;color:#7a869a}.status-pill{padding:6px 9px;border-radius:999px;background:#e6f4ea;color:#216e4e;font-size:.68rem;font-weight:850}.plan-card p,.plan-card li{color:#66758a;line-height:1.6}.plan-card ul{padding-left:20px}.plan-card dl{margin:22px 0 0}.plan-card dl div{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid #edf1f5}.plan-card dt{color:#7a869a}.plan-card dd{margin:0;color:#10233f;font-weight:750}.billing-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.provider-note,.billing-message,.billing-error{margin-top:18px;padding:14px;border-radius:12px}.provider-note{display:flex;flex-direction:column;background:#fff7e6;color:#7a4d00}.provider-note.danger{background:#fff1f0;color:#a61b1b}.provider-note span{font-size:.76rem;margin-top:3px}.billing-message{background:#eaf3ff;color:#174ea6}.billing-error{background:#fff1f0;color:#a61b1b}@media(max-width:800px){.billing-grid{grid-template-columns:1fr}}
   `]
 })
 export class BillingComponent implements OnInit{
@@ -72,4 +79,5 @@ export class BillingComponent implements OnInit{
   canCancel(subscription:Subscription|null){return !!subscription&&['ACTIVE','PAST_DUE'].includes(subscription.status)&&!subscription.cancelAtPeriodEnd;}
   money(minor:number,currency:string){return new Intl.NumberFormat(undefined,{style:'currency',currency}).format(minor/100);}
   date(value?:string){return value?new Intl.DateTimeFormat(undefined,{day:'2-digit',month:'short',year:'numeric'}).format(new Date(value)):'—';}
+  dateTime(value?:string){return value?new Intl.DateTimeFormat(undefined,{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value)):'—';}
 }
