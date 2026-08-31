@@ -9,4 +9,6 @@ export class ApiService {
   private readonly baseUrl = environment.apiUrl;
   get<T>(path: string): Observable<T> { return this.http.get<T>(`${this.baseUrl}${path}`); }
   post<TBody, TResponse>(path: string, body: TBody): Observable<TResponse> { return this.http.post<TResponse>(`${this.baseUrl}${path}`, body); }
+  patch<TBody, TResponse>(path: string, body: TBody): Observable<TResponse> { return this.http.patch<TResponse>(`${this.baseUrl}${path}`, body); }
+  delete(path: string): Observable<void> { return this.http.delete<void>(`${this.baseUrl}${path}`); }
 }
