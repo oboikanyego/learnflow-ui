@@ -15,6 +15,7 @@ export const routes: Routes = [
   { path: 'board', canActivate: [authGuard], loadComponent: () => import('./features/board/board.component').then(m => m.BoardComponent) },
   { path: 'import', canActivate: [authGuard], loadComponent: () => import('./features/import/import.component').then(m => m.ImportComponent) },
   { path: 'notifications', canActivate: [authGuard], loadComponent: () => import('./features/notifications/notifications.component').then(m => m.NotificationsComponent) },
+  { path: 'settings', canActivate: [authGuard], loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent) },
   { path: 'ai-planner', canActivate: [authGuard], loadComponent: () => import('./features/ai-planner/ai-planner.component').then(m => m.AiPlannerComponent) },
   { path: 'ai-requests', canActivate: [authGuard], loadComponent: () => import('./features/ai-requests/ai-requests.component').then(m => m.AiRequestsComponent) },
   { path: 'ai-coach', canActivate: [authGuard], loadComponent: () => import('./features/ai-coach/ai-coach.component').then(m => m.AiCoachComponent) },
