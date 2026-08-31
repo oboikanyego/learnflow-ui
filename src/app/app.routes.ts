@@ -26,5 +26,6 @@ export const routes: Routes = [
   { path: 'admin', canActivate: [authGuard], loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent) },
   { path: 'admin/entitlements', canActivate: [authGuard], loadComponent: () => import('./features/admin/entitlements.component').then(m => m.EntitlementsComponent) },
   { path: 'admin/billing', canActivate: [authGuard], loadComponent: () => import('./features/admin/billing-settings.component').then(m => m.BillingSettingsComponent) },
+  { path: 'admin/billing-events', canActivate: [authGuard], loadComponent: () => import('./features/admin/billing-events.component').then(m => m.BillingEventsComponent) },
   { path: '**', redirectTo: '' }
 ];
