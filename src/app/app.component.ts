@@ -28,8 +28,9 @@ import { AuthService } from './core/auth/auth.service';
             <a routerLink="/board" routerLinkActive="active"><span class="nav-icon">▦</span><span>Board</span></a>
             <a routerLink="/learning-paths" routerLinkActive="active"><span class="nav-icon">◆</span><span>Learning paths</span></a>
 
-            <span class="sidebar-label sidebar-label-spaced">Tools</span>
+            <span class="sidebar-label sidebar-label-spaced">AI & tools</span>
             <a routerLink="/ai-planner" routerLinkActive="active"><span class="nav-icon">✦</span><span>AI planner</span></a>
+            <a routerLink="/ai-coach" routerLinkActive="active"><span class="nav-icon">✺</span><span>AI coach</span></a>
             <a routerLink="/import" routerLinkActive="active"><span class="nav-icon">⇧</span><span>Import</span></a>
             <a routerLink="/notifications" routerLinkActive="active"><span class="nav-icon">◉</span><span>Notifications</span></a>
           </nav>
