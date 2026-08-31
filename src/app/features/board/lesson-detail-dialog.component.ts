@@ -11,44 +11,25 @@ import { Lesson, LessonComment } from '../../models/learning.models';
 @Component({
   standalone: true,
   imports: [CommonModule, FormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  styleUrl: './lesson-detail-dialog.component.css',
   template: `
     <div class="issue-detail-shell">
       <header class="issue-detail-head">
-        <div>
-          <span class="issue-key">LF-{{ shortId(data.lesson._id) }}</span>
-          <h2>{{ data.lesson.title }}</h2>
-          <p>{{ data.lesson.description || 'No lesson description has been added yet.' }}</p>
-        </div>
+        <div><span class="issue-key">LF-{{ shortId(data.lesson._id) }}</span><h2>{{ data.lesson.title }}</h2><p>{{ data.lesson.description || 'No lesson description has been added yet.' }}</p></div>
         <button mat-button type="button" (click)="dialogRef.close(changed())">Close</button>
       </header>
       <div class="issue-detail-grid">
         <section class="issue-main-panel">
           <div class="issue-section">
             <span class="section-label">Activity</span><h3>Comments</h3>
-            <div class="comment-composer">
-              <mat-form-field appearance="outline"><mat-label>Add a comment</mat-label><textarea matInput rows="3" [(ngModel)]="comment" placeholder="Share a note, blocker or learning insight..."></textarea></mat-form-field>
-              <button mat-flat-button type="button" (click)="addComment()" [disabled]="!comment.trim() || posting()">{{ posting() ? 'Posting…' : 'Comment' }}</button>
-            </div>
+            <div class="comment-composer"><mat-form-field appearance="outline"><mat-label>Add a comment</mat-label><textarea matInput rows="3" [(ngModel)]="comment" placeholder="Share a note, blocker or learning insight..."></textarea></mat-form-field><button mat-flat-button type="button" (click)="addComment()" [disabled]="!comment.trim() || posting()">{{ posting() ? 'Posting…' : 'Comment' }}</button></div>
             <div class="comment-list">
-              @for (item of comments(); track item._id) {
-                <article class="comment-item"><div class="comment-avatar">{{ initials(item.authorName) }}</div><div><div class="comment-meta"><strong>{{ item.authorName }}</strong><span>{{ item.createdAt | date:'medium' }}</span></div><p>{{ item.body }}</p></div></article>
-              } @empty { <div class="comment-empty">No comments yet. Add the first note for this lesson.</div> }
+              @for (item of comments(); track item._id) { <article class="comment-item"><div class="comment-avatar">{{ initials(item.authorName) }}</div><div><div class="comment-meta"><strong>{{ item.authorName }}</strong><span>{{ item.createdAt | date:'medium' }}</span></div><p>{{ item.body }}</p></div></article> }
+              @empty { <div class="comment-empty">No comments yet. Add the first note for this lesson.</div> }
             </div>
           </div>
         </section>
-        <aside class="issue-side-panel">
-          <div class="issue-section compact">
-            <span class="section-label">Details</span>
-            <dl class="issue-details-list">
-              <div><dt>Status</dt><dd><span class="status-chip status-{{ data.lesson.status.toLowerCase() }}">{{ pretty(data.lesson.status) }}</span></dd></div>
-              <div><dt>Duration</dt><dd>{{ data.lesson.durationMinutes }} min</dd></div>
-              <div><dt>Scheduled</dt><dd>{{ data.lesson.scheduledAt ? (data.lesson.scheduledAt | date:'medium') : 'Not scheduled' }}</dd></div>
-              <div><dt>Reminder</dt><dd>{{ data.lesson.reminderMinutes }} min before</dd></div>
-              @if (data.lesson.resourceUrl) { <div><dt>Resource</dt><dd><a [href]="data.lesson.resourceUrl" target="_blank" rel="noopener">Open resource</a></dd></div> }
-              @if (data.lesson.notes) { <div><dt>Notes</dt><dd>{{ data.lesson.notes }}</dd></div> }
-            </dl>
-          </div>
-        </aside>
+        <aside class="issue-side-panel"><div class="issue-section compact"><span class="section-label">Details</span><dl class="issue-details-list"><div><dt>Status</dt><dd><span class="status-chip status-{{ data.lesson.status.toLowerCase() }}">{{ pretty(data.lesson.status) }}</span></dd></div><div><dt>Duration</dt><dd>{{ data.lesson.durationMinutes }} min</dd></div><div><dt>Scheduled</dt><dd>{{ data.lesson.scheduledAt ? (data.lesson.scheduledAt | date:'medium') : 'Not scheduled' }}</dd></div><div><dt>Reminder</dt><dd>{{ data.lesson.reminderMinutes }} min before</dd></div>@if (data.lesson.resourceUrl) { <div><dt>Resource</dt><dd><a [href]="data.lesson.resourceUrl" target="_blank" rel="noopener">Open resource</a></dd></div> }@if (data.lesson.notes) { <div><dt>Notes</dt><dd>{{ data.lesson.notes }}</dd></div> }</dl></div></aside>
       </div>
     </div>
   `
