@@ -20,18 +20,25 @@ type ChatItem = { role: 'user' | 'coach'; text: string };
     <section class="page-enter">
       <div class="page-head">
         <div><span class="eyebrow">AI assistant</span><h1>Learning coach</h1><p class="muted">Ask for explanations, study guidance, blockers and practical next steps.</p></div>
-        @if(provider()){<span class="provider-chip">{{ provider() }}{{ configured() ? '' : ' · not configured' }}</span>}
+        @if (provider()) {
+          <span class="provider-chip">{{ provider() }}{{ configured() ? '' : ' · not configured' }}</span>
+        }
       </div>
 
       <div class="coach-layout">
         <div class="coach-card">
           <div class="coach-stream">
-            @for(item of messages(); track $index){
-              <div class="coach-message {{item.role}}">
-                @if(item.role === 'coach'){<app-markdown-content [markdown]="item.text" />}@else{{ item.text }}
+            @for (item of messages(); track $index) {
+              <div class="coach-message" [class.user]="item.role === 'user'" [class.coach]="item.role === 'coach'">
+                @if (item.role === 'coach') {
+                  <app-markdown-content [markdown]="item.text"></app-markdown-content>
+                } @else {
+                  {{ item.text }}
+                }
               </div>
+            } @empty {
+              <div class="empty-coach"><strong>What are you working through?</strong><span>The coach can explain a concept, break down a difficult lesson, or suggest what to learn next.</span></div>
             }
-            @empty{<div class="empty-coach"><strong>What are you working through?</strong><span>The coach can explain a concept, break down a difficult lesson, or suggest what to learn next.</span></div>}
           </div>
           <div class="coach-composer">
             <mat-form-field appearance="outline"><mat-label>Ask LearnFlow</mat-label><textarea matInput rows="4" [(ngModel)]="message" (keydown.control.enter)="send()" placeholder="Example: I understand React props but state is still confusing. Explain the difference with a practical example."></textarea></mat-form-field>
