@@ -11,12 +11,21 @@ export interface NotificationPreferences {
   celebrationEmails: boolean;
 }
 
+export interface Entitlement {
+  plan: 'FREE' | 'PRO';
+  status: 'ACTIVE' | 'INACTIVE' | 'GRACE';
+  source: 'SYSTEM' | 'ADMIN' | 'BILLING';
+  startsAt?: string;
+  endsAt?: string;
+}
+
 export interface AuthUser {
   id: string;
   name: string;
   email: string;
   role: string;
   timezone: string;
+  entitlement?: Entitlement;
   notificationPreferences?: NotificationPreferences;
 }
 export interface AuthResponse { token: string; user: AuthUser; }
@@ -52,6 +61,17 @@ export class AuthService {
 
   loadProfile() {
     return this.http.get<AuthUser>(`${environment.apiUrl}/api/v1/auth/me`).pipe(tap(user => this.userState.set(user)));
+  }
+
+  updateProfile(input: { name: string; timezone: string }) {
+    return this.http.patch<AuthUser>(`${environment.apiUrl}/api/v1/auth/profile`, input).pipe(tap(user => {
+      const current = this.userState();
+      this.userState.set(current ? { ...current, ...user } : user);
+    }));
+  }
+
+  changePassword(input: { currentPassword: string; newPassword: string }) {
+    return this.http.post<{ message: string }>(`${environment.apiUrl}/api/v1/auth/change-password`, input);
   }
 
   updateNotificationPreferences(preferences: NotificationPreferences) {
