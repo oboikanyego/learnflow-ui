@@ -4,6 +4,7 @@ import { ApiService } from '../../core/services/api.service';
 
 interface BillingCatalog {
   configured:boolean;
+  enabled:boolean;
   provider:string;
   currency:string;
   graceDays:number;
@@ -20,6 +21,7 @@ interface Subscription {
   provider:string;
 }
 interface BillingResponse{catalog:BillingCatalog;subscription:Subscription|null}
+interface CheckoutResponse{provider:string;checkoutUrl:string;reference:string;interval:'MONTHLY'|'YEARLY'}
 
 @Component({
   standalone:true,
@@ -35,8 +37,8 @@ interface BillingResponse{catalog:BillingCatalog;subscription:Subscription|null}
           </article>
           <article class="plan-card pro"><div class="plan-head"><div><span class="mini-label">Upgrade option</span><h2>LearnFlow Pro</h2></div><strong>{{money(d.catalog.plans.PRO.monthlyAmountMinor,d.catalog.currency)}}<small>/month</small></strong></div>
             <ul><li>20 AI planner generations per day</li><li>100 AI coach requests per day</li><li>Advanced analytics entitlement</li><li>Priority AI queue capability</li><li>Weekly progress email capability</li></ul>
-            @if(!d.subscription){<div class="billing-actions"><button mat-flat-button class="primary-cta" (click)="checkout('MONTHLY')" [disabled]="busy()">Upgrade monthly</button><button mat-stroked-button (click)="checkout('YEARLY')" [disabled]="busy()">Yearly · {{money(d.catalog.plans.PRO.yearlyAmountMinor,d.catalog.currency)}}</button></div>}@else if(!d.subscription.cancelAtPeriodEnd){<button mat-stroked-button (click)="cancel()" [disabled]="busy()">Cancel at period end</button>}
-            @if(!d.catalog.configured){<div class="provider-note"><strong>Billing provider not connected yet</strong><span>The subscription domain is ready, but checkout remains disabled until a payment provider is configured.</span></div>}
+            @if(!d.subscription){<div class="billing-actions"><button mat-flat-button class="primary-cta" (click)="checkout('MONTHLY')" [disabled]="busy()||!d.catalog.enabled">Upgrade monthly</button><button mat-stroked-button (click)="checkout('YEARLY')" [disabled]="busy()||!d.catalog.enabled">Yearly · {{money(d.catalog.plans.PRO.yearlyAmountMinor,d.catalog.currency)}}</button></div>}@else if(!d.subscription.cancelAtPeriodEnd){<button mat-stroked-button (click)="cancel()" [disabled]="busy()">Cancel at period end</button>}
+            @if(!d.catalog.configured||!d.catalog.enabled){<div class="provider-note"><strong>Checkout is not available yet</strong><span>Billing must be fully configured and enabled by LearnFlow before upgrades can start.</span></div>}
           </article>
         </div>
         @if(message()){<div class="billing-message">{{message()}}</div>}
@@ -51,7 +53,7 @@ export class BillingComponent implements OnInit{
   private readonly api=inject(ApiService);readonly data=signal<BillingResponse|null>(null);readonly error=signal('');readonly message=signal('');readonly busy=signal(false);
   ngOnInit(){this.load();}
   load(){this.error.set('');this.api.get<BillingResponse>('/api/v1/billing/subscription').subscribe({next:v=>this.data.set(v),error:e=>this.error.set(e?.error?.message??'Unable to load billing details.')});}
-  checkout(interval:'MONTHLY'|'YEARLY'){this.busy.set(true);this.message.set('');this.api.post('/api/v1/billing/checkout',{interval}).subscribe({next:()=>{this.busy.set(false);this.load();},error:e=>{this.busy.set(false);this.message.set(e?.error?.message??'Checkout is unavailable.');}});}
+  checkout(interval:'MONTHLY'|'YEARLY'){this.busy.set(true);this.message.set('');this.api.post<{interval:'MONTHLY'|'YEARLY'},CheckoutResponse>('/api/v1/billing/checkout',{interval}).subscribe({next:r=>{this.busy.set(false);window.location.assign(r.checkoutUrl);},error:e=>{this.busy.set(false);this.message.set(e?.error?.message??'Checkout is unavailable.');}});}
   cancel(){this.busy.set(true);this.message.set('');this.api.post('/api/v1/billing/cancel',{}).subscribe({next:()=>{this.busy.set(false);this.load();},error:e=>{this.busy.set(false);this.message.set(e?.error?.message??'Cancellation is unavailable.');}});}
   money(minor:number,currency:string){return new Intl.NumberFormat(undefined,{style:'currency',currency}).format(minor/100);}
   date(value?:string){return value?new Intl.DateTimeFormat(undefined,{day:'2-digit',month:'short',year:'numeric'}).format(new Date(value)):'—';}
