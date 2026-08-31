@@ -3,7 +3,7 @@ import { Injectable, computed, signal } from '@angular/core';
 import { tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-export interface AuthUser { id: string; name: string; email: string; role: string; }
+export interface AuthUser { id: string; name: string; email: string; role: string; timezone: string; }
 export interface AuthResponse { token: string; user: AuthUser; }
 
 @Injectable({ providedIn: 'root' })
@@ -15,7 +15,7 @@ export class AuthService {
 
   constructor(private readonly http: HttpClient) {}
 
-  register(input: { name: string; email: string; password: string }) {
+  register(input: { name: string; email: string; password: string; timezone: string }) {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/api/v1/auth/register`, input).pipe(tap(response => this.persist(response)));
   }
 
