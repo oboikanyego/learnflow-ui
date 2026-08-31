@@ -5,6 +5,8 @@ import { environment } from '../../../environments/environment';
 
 export interface AuthUser { id: string; name: string; email: string; role: string; timezone: string; }
 export interface AuthResponse { token: string; user: AuthUser; }
+export interface ForgotPasswordResponse { message: string; resetUrl?: string; }
+export interface ResetPasswordResponse { message: string; }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -23,6 +25,14 @@ export class AuthService {
 
   login(input: { email: string; password: string }) {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/api/v1/auth/login`, input).pipe(tap(response => this.persist(response)));
+  }
+
+  forgotPassword(email: string) {
+    return this.http.post<ForgotPasswordResponse>(`${environment.apiUrl}/api/v1/auth/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, password: string) {
+    return this.http.post<ResetPasswordResponse>(`${environment.apiUrl}/api/v1/auth/reset-password`, { token, password });
   }
 
   loadProfile() {
