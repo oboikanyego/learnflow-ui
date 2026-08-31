@@ -20,7 +20,14 @@ interface Subscription {
   cancelAtPeriodEnd:boolean;
   provider:string;
 }
-interface BillingResponse{catalog:BillingCatalog;subscription:Subscription|null}
+interface BillingResponse{
+  catalog:BillingCatalog;
+  subscription:Subscription|null;
+  effectivePlan:'FREE'|'PRO';
+  entitlementStatus:'ACTIVE'|'INACTIVE'|'GRACE';
+  entitlementSource:'SYSTEM'|'ADMIN'|'BILLING';
+  entitlementEndsAt?:string;
+}
 interface CheckoutResponse{provider:string;checkoutUrl:string;reference:string;interval:'MONTHLY'|'YEARLY'}
 
 @Component({
@@ -31,13 +38,20 @@ interface CheckoutResponse{provider:string;checkoutUrl:string;reference:string;i
       <div class="page-head"><div><span class="eyebrow">Account</span><h1>Billing & subscription</h1><p class="muted">Review your LearnFlow plan, billing state and upgrade options.</p></div></div>
       @if(data();as d){
         <div class="billing-grid">
-          <article class="plan-card current"><div class="plan-head"><div><span class="mini-label">Current plan</span><h2>{{d.subscription?'PRO':'FREE'}}</h2></div><span class="status-pill">{{d.subscription?.status||'ACTIVE'}}</span></div>
-            <p>{{d.subscription?'Higher AI allowances and Pro capabilities are enabled while your entitlement is active.':'Core learning planning, reminders, board and standard AI allowances are included.'}}</p>
-            @if(d.subscription){<dl><div><dt>Provider</dt><dd>{{d.subscription.provider}}</dd></div><div><dt>Billing interval</dt><dd>{{d.subscription.billingInterval}}</dd></div><div><dt>Amount</dt><dd>{{money(d.subscription.amountMinor,d.subscription.currency)}}</dd></div><div><dt>Next billing</dt><dd>{{date(d.subscription.nextBillingAt||d.subscription.currentPeriodEnd)}}</dd></div></dl>}
+          <article class="plan-card current"><div class="plan-head"><div><span class="mini-label">Current plan</span><h2>{{d.effectivePlan}}</h2></div><span class="status-pill">{{d.entitlementStatus}}</span></div>
+            <p>{{d.effectivePlan==='PRO'?'Higher AI allowances and Pro capabilities are enabled while your entitlement is active.':'Core learning planning, reminders, board and standard AI allowances are included.'}}</p>
+            @if(d.subscription){<dl><div><dt>Subscription status</dt><dd>{{d.subscription.status}}</dd></div><div><dt>Provider</dt><dd>{{d.subscription.provider}}</dd></div><div><dt>Billing interval</dt><dd>{{d.subscription.billingInterval}}</dd></div><div><dt>Amount</dt><dd>{{money(d.subscription.amountMinor,d.subscription.currency)}}</dd></div><div><dt>Next billing</dt><dd>{{date(d.subscription.nextBillingAt||d.subscription.currentPeriodEnd)}}</dd></div></dl>}
           </article>
           <article class="plan-card pro"><div class="plan-head"><div><span class="mini-label">Upgrade option</span><h2>LearnFlow Pro</h2></div><strong>{{money(d.catalog.plans.PRO.monthlyAmountMinor,d.catalog.currency)}}<small>/month</small></strong></div>
             <ul><li>20 AI planner generations per day</li><li>100 AI coach requests per day</li><li>Advanced analytics entitlement</li><li>Priority AI queue capability</li><li>Weekly progress email capability</li></ul>
-            @if(!d.subscription){<div class="billing-actions"><button mat-flat-button class="primary-cta" (click)="checkout('MONTHLY')" [disabled]="busy()||!d.catalog.enabled">Upgrade monthly</button><button mat-stroked-button (click)="checkout('YEARLY')" [disabled]="busy()||!d.catalog.enabled">Yearly · {{money(d.catalog.plans.PRO.yearlyAmountMinor,d.catalog.currency)}}</button></div>}@else if(!d.subscription.cancelAtPeriodEnd){<button mat-stroked-button (click)="cancel()" [disabled]="busy()">Cancel at period end</button>}
+            @if(d.effectivePlan!=='PRO'){
+              <div class="billing-actions"><button mat-flat-button class="primary-cta" (click)="checkout('MONTHLY')" [disabled]="busy()||!d.catalog.enabled">Upgrade monthly</button><button mat-stroked-button (click)="checkout('YEARLY')" [disabled]="busy()||!d.catalog.enabled">Yearly · {{money(d.catalog.plans.PRO.yearlyAmountMinor,d.catalog.currency)}}</button></div>
+            }@else if(canCancel(d.subscription)){
+              <button mat-stroked-button (click)="cancel()" [disabled]="busy()">Cancel at period end</button>
+            }
+            @if(d.subscription?.status==='PENDING'){
+              <div class="provider-note"><strong>Payment confirmation pending</strong><span>Your plan remains {{d.effectivePlan}} until Paystack confirms the subscription.</span></div>
+            }
             @if(!d.catalog.configured||!d.catalog.enabled){<div class="provider-note"><strong>Checkout is not available yet</strong><span>Billing must be fully configured and enabled by LearnFlow before upgrades can start.</span></div>}
           </article>
         </div>
@@ -55,6 +69,7 @@ export class BillingComponent implements OnInit{
   load(){this.error.set('');this.api.get<BillingResponse>('/api/v1/billing/subscription').subscribe({next:v=>this.data.set(v),error:e=>this.error.set(e?.error?.message??'Unable to load billing details.')});}
   checkout(interval:'MONTHLY'|'YEARLY'){this.busy.set(true);this.message.set('');this.api.post<{interval:'MONTHLY'|'YEARLY'},CheckoutResponse>('/api/v1/billing/checkout',{interval}).subscribe({next:r=>{this.busy.set(false);window.location.assign(r.checkoutUrl);},error:e=>{this.busy.set(false);this.message.set(e?.error?.message??'Checkout is unavailable.');}});}
   cancel(){this.busy.set(true);this.message.set('');this.api.post('/api/v1/billing/cancel',{}).subscribe({next:()=>{this.busy.set(false);this.load();},error:e=>{this.busy.set(false);this.message.set(e?.error?.message??'Cancellation is unavailable.');}});}
+  canCancel(subscription:Subscription|null){return !!subscription&&['ACTIVE','PAST_DUE'].includes(subscription.status)&&!subscription.cancelAtPeriodEnd;}
   money(minor:number,currency:string){return new Intl.NumberFormat(undefined,{style:'currency',currency}).format(minor/100);}
   date(value?:string){return value?new Intl.DateTimeFormat(undefined,{day:'2-digit',month:'short',year:'numeric'}).format(new Date(value)):'—';}
 }
