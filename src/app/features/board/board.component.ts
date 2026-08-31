@@ -29,7 +29,6 @@ import { LessonDetailDialogComponent } from './lesson-detail-dialog.component';
       </div>
 
       <div class="board-scroll-shell">
-        <div class="board-scroll-hint"><span>Scroll horizontally to explore the workflow</span><span aria-hidden="true">→</span></div>
         <div class="board vibrant-board">
           @for (status of statuses; track status) {
             <div class="column column-{{ status.toLowerCase() }}">
