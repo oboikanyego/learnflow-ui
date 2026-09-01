@@ -66,7 +66,7 @@ export class RegisterComponent {
     if (this.form.invalid) return;
     this.loading.set(true); this.error.set('');
     this.auth.register({ ...this.form.getRawValue(), timezone: this.timezone }).subscribe({
-      next: () => void this.router.navigateByUrl('/dashboard'),
+      next: () => void this.router.navigateByUrl('/onboarding'),
       error: err => { this.error.set(err?.error?.message ?? 'Unable to create account'); this.loading.set(false); }
     });
   }
