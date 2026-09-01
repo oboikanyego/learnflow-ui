@@ -1,5 +1,5 @@
 export type LessonStatus='BACKLOG'|'SCHEDULED'|'IN_PROGRESS'|'COMPLETED'|'MISSED'|'SKIPPED';
-export interface Lesson{_id:string;title:string;description?:string;resourceUrl?:string;position:number;status:LessonStatus;scheduledAt?:string;durationMinutes:number;reminderMinutes:number;evidenceUrl?:string;notes?:string;}
+export interface Lesson{_id:string;title:string;description?:string;resourceUrl?:string;position:number;status:LessonStatus;scheduledAt?:string;durationMinutes:number;reminderMinutes:number;evidenceUrl?:string;notes?:string;confidenceScore?:number;reviewStage?:number;nextReviewAt?:string;lastReviewedAt?:string;reviewCount?:number;}
 export interface LessonComment{_id:string;lessonId:string;authorId:string;authorName:string;body:string;createdAt:string;updatedAt:string;}
 export interface LearningModule{_id:string;title:string;description?:string;position:number;lessons:Lesson[];}
 export interface Phase{_id:string;title:string;description?:string;position:number;modules:LearningModule[];}
