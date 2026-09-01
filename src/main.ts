@@ -2,7 +2,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
+import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { authInterceptor } from './app/core/auth/auth.interceptor';
@@ -13,6 +13,6 @@ bootstrapApplication(AppComponent, {
     provideAnimations(),
     provideNativeDateAdapter(),
     provideHttpClient(withInterceptors([loadingInterceptor, authInterceptor])),
-    provideRouter(routes)
+    provideRouter(routes, withPreloading(PreloadAllModules))
   ]
 }).catch(console.error);
