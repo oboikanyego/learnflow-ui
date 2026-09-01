@@ -14,6 +14,7 @@ export const routes: Routes = [
   { path: 'today', canActivate: [authGuard], loadComponent: () => import('./features/today/today.component').then(m => m.TodayComponent) },
   { path: 'focus/:lessonId', canActivate: [authGuard], loadComponent: () => import('./features/focus/focus-session.component').then(m => m.FocusSessionComponent) },
   { path: 'study-history', canActivate: [authGuard], loadComponent: () => import('./features/focus/study-history.component').then(m => m.StudyHistoryComponent) },
+  { path: 'retention', canActivate: [authGuard], loadComponent: () => import('./features/retention/retention.component').then(m => m.RetentionComponent) },
   { path: 'achievements', canActivate: [authGuard], loadComponent: () => import('./features/achievements/achievements.component').then(m => m.AchievementsComponent) },
   { path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
   { path: 'progress', canActivate: [authGuard], loadComponent: () => import('./features/progress/progress.component').then(m => m.ProgressComponent) },
