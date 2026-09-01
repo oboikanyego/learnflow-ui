@@ -25,7 +25,8 @@
               "src/sidebar-groups.css",
               "src/brand-logo.css",
               "src/theme-modes.css",
-              "src/accessibility.css"
+              "src/accessibility.css",
+              "src/business-ui.css"
             ]
           },
           "configurations": {
