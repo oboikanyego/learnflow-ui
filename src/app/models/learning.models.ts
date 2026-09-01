@@ -6,6 +6,7 @@ export interface Phase{_id:string;title:string;description?:string;position:numb
 export interface LearningPath{_id:string;title:string;description?:string;status:string;}
 export interface Analytics{
   learningPaths:number;totalLessons:number;completedLessons:number;missedLessons:number;scheduledLessons:number;completionRate:number;completedHours:number;currentStreakDays:number;
+  trackedStudyHours?:number;focusMinutesThisWeek?:number;sessionsCompleted?:number;
   statusBreakdown:Array<{status:LessonStatus;count:number}>;
   weeklyCompletions:Array<{weekStart:string;label:string;completed:number;hours:number}>;
   nextLessons:Array<{_id:string;title:string;scheduledAt?:string;durationMinutes:number}>;
