@@ -17,6 +17,7 @@ interface OnboardingResponse {
     targetDate?: string;
   } | null;
 }
+interface QueueResponse { jobId:string; status:string; message:string; }
 
 @Component({
   standalone: true,
@@ -26,54 +27,22 @@ interface OnboardingResponse {
       <div class="intro">
         <span class="eyebrow">Guided learning setup</span>
         <h1>Build a learning week you can actually keep.</h1>
-        <p>Tell LearnFlow what you want to learn and when you can realistically study. We will turn it into your first goal and pre-configure AI Planner.</p>
+        <p>Tell LearnFlow what you want to learn and when you can realistically study. We will turn it into your first goal and, if you choose, generate the first plan immediately.</p>
       </div>
 
       <div class="wizard-card">
         <div class="stepper"><span class="active">1</span><i></i><span class="active">2</span><i></i><span class="active">3</span></div>
         <div class="field-grid">
-          <mat-form-field appearance="outline" class="wide">
-            <mat-label>What do you want to learn?</mat-label>
-            <input matInput [(ngModel)]="goal" placeholder="Example: Become productive with React and Next.js">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Weekly target (minutes)</mat-label>
-            <input matInput type="number" min="30" [(ngModel)]="weeklyMinutes">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Preferred study time</mat-label>
-            <input matInput type="time" [(ngModel)]="time">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="wide">
-            <mat-label>Target date</mat-label>
-            <input matInput type="date" [(ngModel)]="targetDate">
-          </mat-form-field>
+          <mat-form-field appearance="outline" class="wide"><mat-label>What do you want to learn?</mat-label><input matInput [(ngModel)]="goal" placeholder="Example: Become productive with React and Next.js"></mat-form-field>
+          <mat-form-field appearance="outline"><mat-label>Weekly target (minutes)</mat-label><input matInput type="number" min="30" [(ngModel)]="weeklyMinutes"></mat-form-field>
+          <mat-form-field appearance="outline"><mat-label>Preferred study time</mat-label><input matInput type="time" [(ngModel)]="time"></mat-form-field>
+          <mat-form-field appearance="outline" class="wide"><mat-label>Target date</mat-label><input matInput type="date" [(ngModel)]="targetDate"></mat-form-field>
         </div>
 
-        <div class="days-block">
-          <span class="mini-label">Preferred learning days</span>
-          <div class="days">
-            @for (day of allDays; track day) {
-              <button type="button" [class.selected]="days.includes(day)" (click)="toggleDay(day)">{{ day.slice(0,3) }}</button>
-            }
-          </div>
-        </div>
-
-        <div class="summary">
-          <div><span>Weekly commitment</span><strong>{{ weeklyHours() }}</strong></div>
-          <div><span>Sessions</span><strong>{{ days.length }} / week</strong></div>
-          <div><span>Suggested session</span><strong>{{ sessionMinutes() }} min</strong></div>
-        </div>
-
+        <div class="days-block"><span class="mini-label">Preferred learning days</span><div class="days">@for (day of allDays; track day) {<button type="button" [class.selected]="days.includes(day)" (click)="toggleDay(day)">{{ day.slice(0,3) }}</button>}</div></div>
+        <div class="summary"><div><span>Weekly commitment</span><strong>{{ weeklyHours() }}</strong></div><div><span>Sessions</span><strong>{{ days.length }} / week</strong></div><div><span>Suggested session</span><strong>{{ sessionMinutes() }} min</strong></div></div>
         @if (error()) { <div class="error">{{ error() }}</div> }
-
-        <div class="actions">
-          <button mat-stroked-button type="button" (click)="finish(false)" [disabled]="saving()">Save setup</button>
-          <button mat-flat-button class="primary-cta" type="button" (click)="finish(true)" [disabled]="saving() || !canSubmit()">{{ saving() ? 'Setting up…' : 'Create goal & plan with AI' }}</button>
-        </div>
+        <div class="actions"><button mat-stroked-button type="button" (click)="finish(false)" [disabled]="saving()">Save setup</button><button mat-flat-button class="primary-cta" type="button" (click)="finish(true)" [disabled]="saving() || !canSubmit()">{{ saving() ? 'Setting up…' : 'Create goal & plan with AI' }}</button></div>
       </div>
     </section>
   `,
@@ -82,55 +51,29 @@ interface OnboardingResponse {
   `]
 })
 export class OnboardingComponent implements OnInit {
-  private readonly api = inject(ApiService);
-  private readonly router = inject(Router);
+  private readonly api = inject(ApiService); private readonly router = inject(Router);
   readonly allDays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-  goal = '';
-  weeklyMinutes = 240;
-  time = '19:00';
-  targetDate = this.defaultTargetDate();
-  days = ['Monday','Wednesday','Sunday'];
-  readonly saving = signal(false);
-  readonly error = signal('');
+  goal = ''; weeklyMinutes = 240; time = '19:00'; targetDate = this.defaultTargetDate(); days = ['Monday','Wednesday','Sunday'];
+  readonly saving = signal(false); readonly error = signal('');
 
-  ngOnInit(): void {
-    this.api.get<OnboardingResponse>('/api/v1/onboarding').subscribe({ next: value => {
-      const saved = value.onboarding;
-      if (!saved) return;
-      this.goal = saved.learningGoal ?? this.goal;
-      this.weeklyMinutes = saved.weeklyMinutesTarget ?? this.weeklyMinutes;
-      this.days = saved.preferredDays?.length ? [...saved.preferredDays] : this.days;
-      this.time = saved.preferredTime ?? this.time;
-      this.targetDate = saved.targetDate ? saved.targetDate.slice(0,10) : this.targetDate;
-    }});
+  ngOnInit(): void { this.api.get<OnboardingResponse>('/api/v1/onboarding').subscribe({ next: value => { const saved=value.onboarding;if(!saved)return;this.goal=saved.learningGoal??this.goal;this.weeklyMinutes=saved.weeklyMinutesTarget??this.weeklyMinutes;this.days=saved.preferredDays?.length?[...saved.preferredDays]:this.days;this.time=saved.preferredTime??this.time;this.targetDate=saved.targetDate?saved.targetDate.slice(0,10):this.targetDate; } }); }
+  toggleDay(day:string):void{this.days=this.days.includes(day)?this.days.filter(item=>item!==day):[...this.days,day];}
+  weeklyHours():string{return `${(this.weeklyMinutes/60).toFixed(this.weeklyMinutes%60?1:0)} hrs / week`;}
+  sessionMinutes():number{return Math.max(15,Math.round(this.weeklyMinutes/Math.max(1,this.days.length)));}
+  canSubmit():boolean{return this.goal.trim().length>=3&&this.days.length>0&&this.weeklyMinutes>=30;}
+
+  finish(generatePlan:boolean):void{
+    if(!this.canSubmit()){this.error.set('Add a learning goal, weekly target and at least one study day.');return;}
+    this.saving.set(true);this.error.set('');
+    const payload={learningGoal:this.goal.trim(),weeklyMinutesTarget:this.weeklyMinutes,preferredDays:this.days,preferredTime:this.time,targetDate:this.targetDate||null};
+    this.api.put<object,OnboardingResponse>('/api/v1/onboarding',payload).subscribe({next:()=>{this.api.post('/api/v1/goals',{title:this.goal.trim(),targetDate:this.targetDate||null,weeklyMinutesTarget:this.weeklyMinutes}).subscribe({next:()=>this.goNext(generatePlan),error:()=>this.goNext(generatePlan)});},error:err=>{this.saving.set(false);this.error.set(err?.error?.message??'Could not save your learning setup.');}});
   }
 
-  toggleDay(day: string): void { this.days = this.days.includes(day) ? this.days.filter(item => item !== day) : [...this.days, day]; }
-  weeklyHours(): string { return `${(this.weeklyMinutes / 60).toFixed(this.weeklyMinutes % 60 ? 1 : 0)} hrs / week`; }
-  sessionMinutes(): number { return Math.max(15, Math.round(this.weeklyMinutes / Math.max(1, this.days.length))); }
-  canSubmit(): boolean { return this.goal.trim().length >= 3 && this.days.length > 0 && this.weeklyMinutes >= 30; }
-
-  finish(openPlanner: boolean): void {
-    if (!this.canSubmit()) { this.error.set('Add a learning goal, weekly target and at least one study day.'); return; }
-    this.saving.set(true); this.error.set('');
-    const payload = { learningGoal: this.goal.trim(), weeklyMinutesTarget: this.weeklyMinutes, preferredDays: this.days, preferredTime: this.time, targetDate: this.targetDate || null };
-    this.api.put<object,OnboardingResponse>('/api/v1/onboarding', payload).subscribe({
-      next: () => {
-        this.api.post('/api/v1/goals', { title: this.goal.trim(), targetDate: this.targetDate || null, weeklyMinutesTarget: this.weeklyMinutes }).subscribe({
-          next: () => this.goNext(openPlanner),
-          error: () => this.goNext(openPlanner)
-        });
-      },
-      error: err => { this.saving.set(false); this.error.set(err?.error?.message ?? 'Could not save your learning setup.'); }
-    });
+  private goNext(generatePlan:boolean):void{
+    if(!generatePlan){this.saving.set(false);void this.router.navigateByUrl('/today');return;}
+    const weeks=this.weeksToTarget();
+    this.api.post<object,QueueResponse>('/api/v1/ai/generate-plan/background',{topic:this.goal.trim(),weeks,startDate:new Date().toISOString().slice(0,10),time:this.time,days:this.days,durationMinutes:this.sessionMinutes(),save:true}).subscribe({next:r=>{this.saving.set(false);void this.router.navigate(['/ai-planner'],{queryParams:{job:r.jobId}});},error:err=>{this.saving.set(false);this.error.set(err?.error?.message??'Your setup was saved, but the AI plan could not be started.');}});
   }
-
-  private goNext(openPlanner: boolean): void {
-    this.saving.set(false);
-    if (!openPlanner) { void this.router.navigateByUrl('/dashboard'); return; }
-    const weeks = Math.max(1, Math.ceil((new Date(this.targetDate).getTime() - Date.now()) / 604800000));
-    void this.router.navigate(['/ai-planner'], { queryParams: { topic: this.goal.trim(), weeks: Math.min(52, weeks), days: this.days.join(','), time: this.time, startDate: new Date().toISOString().slice(0,10), onboarding: 1 } });
-  }
-
-  private defaultTargetDate(): string { const d = new Date(); d.setDate(d.getDate() + 42); return d.toISOString().slice(0,10); }
+  private weeksToTarget():number{const end=new Date(this.targetDate).getTime();if(Number.isNaN(end))return 6;return Math.min(52,Math.max(1,Math.ceil((end-Date.now())/604800000)));}
+  private defaultTargetDate():string{const d=new Date();d.setDate(d.getDate()+42);return d.toISOString().slice(0,10);}
 }
