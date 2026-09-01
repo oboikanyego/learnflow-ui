@@ -100,35 +100,50 @@ const TOUR_STEPS = [
             </section>
           </nav>
 
-          <div class="sidebar-help">
-            <button type="button" class="sidebar-help-button" (click)="startTour()"><span class="help-mark">?</span><span><strong>Need a hand?</strong><small>Take the 2-minute tour</small></span></button>
-          </div>
+          <div class="sidebar-help"><button type="button" class="sidebar-help-button" (click)="startTour()"><span class="help-mark">?</span><span><strong>Need a hand?</strong><small>Take the 2-minute tour</small></span></button></div>
           <div class="sidebar-footer"><button type="button" class="sidebar-account" (click)="logout()"><span class="account-avatar">{{ accountInitials() }}</span><span><strong>{{ auth.user()?.name || 'Account' }}</strong><small>{{ auth.user()?.entitlement?.plan || 'FREE' }} · Sign out</small></span><span>↗</span></button></div>
         </aside>
 
         <div class="workspace-main">
           <header class="workspace-topbar">
             <div class="workspace-breadcrumb"><strong>My workspace</strong><span class="workspace-status">Learning active</span></div>
-            <div class="topbar-actions">
-              <a routerLink="/help" class="topbar-help">Help</a>
-              <a routerLink="/notifications" class="topbar-icon notification-icon" aria-label="Notifications">◉@if (notifications.unreadCount() > 0) {<span class="notification-badge">{{ notifications.unreadCount() > 99 ? '99+' : notifications.unreadCount() }}</span>}</a>
-              <a routerLink="/ai-planner" class="create-work-item">New plan</a>
-            </div>
+            <div class="topbar-actions"><a routerLink="/help" class="topbar-help">Help</a><a routerLink="/notifications" class="topbar-icon notification-icon" aria-label="Notifications">◉@if (notifications.unreadCount() > 0) {<span class="notification-badge">{{ notifications.unreadCount() > 99 ? '99+' : notifications.unreadCount() }}</span>}</a><a routerLink="/ai-planner" class="create-work-item">New plan</a></div>
           </header>
           <main id="main-content" class="shell workspace-shell"><router-outlet /></main>
         </div>
       </div>
 
+      <nav class="mobile-app-nav" aria-label="Mobile navigation">
+        <a routerLink="/today" routerLinkActive="active"><span>⌂</span><small>Today</small></a>
+        <a routerLink="/ai-planner" routerLinkActive="active"><span>＋</span><small>Plan</small></a>
+        <a routerLink="/retention" routerLinkActive="active"><span>↻</span><small>Review</small></a>
+        <a routerLink="/career" routerLinkActive="active"><span>◇</span><small>Career</small></a>
+        <button type="button" [class.active]="mobileMoreOpen()" (click)="toggleMobileMore()"><span>•••</span><small>More</small></button>
+      </nav>
+
+      @if (mobileMoreOpen()) {
+        <button class="mobile-more-backdrop" type="button" aria-label="Close mobile menu" (click)="mobileMoreOpen.set(false)"></button>
+        <section class="mobile-more-sheet" aria-label="More navigation">
+          <header><div><strong>More</strong><span>Learning, tools and account</span></div><button type="button" (click)="mobileMoreOpen.set(false)" aria-label="Close">×</button></header>
+          <div class="mobile-more-grid">
+            <a routerLink="/dashboard" (click)="mobileMoreOpen.set(false)"><span>▦</span><strong>Dashboard</strong><small>Overview and metrics</small></a>
+            <a routerLink="/goals" (click)="mobileMoreOpen.set(false)"><span>◎</span><strong>Goals</strong><small>Targets and commitments</small></a>
+            <a routerLink="/learning-paths" (click)="mobileMoreOpen.set(false)"><span>◇</span><strong>Learning paths</strong><small>Your structured plans</small></a>
+            <a routerLink="/board" (click)="mobileMoreOpen.set(false)"><span>▤</span><strong>Board</strong><small>Move lessons forward</small></a>
+            <a routerLink="/mastery" (click)="mobileMoreOpen.set(false)"><span>✓</span><strong>Mastery</strong><small>Checkpoint results</small></a>
+            <a routerLink="/study-history" (click)="mobileMoreOpen.set(false)"><span>◷</span><strong>Study history</strong><small>Actual focus time</small></a>
+            <a routerLink="/ai-coach" (click)="mobileMoreOpen.set(false)"><span>✦</span><strong>Coach</strong><small>Learning guidance</small></a>
+            <a routerLink="/career/applications" (click)="mobileMoreOpen.set(false)"><span>▤</span><strong>Applications</strong><small>Career pipeline</small></a>
+            <a routerLink="/notifications" (click)="mobileMoreOpen.set(false)"><span>◉</span><strong>Notifications</strong><small>Updates and reminders</small></a>
+            <a routerLink="/help" (click)="mobileMoreOpen.set(false)"><span>?</span><strong>Help & guide</strong><small>Learn how it works</small></a>
+            <a routerLink="/profile" (click)="mobileMoreOpen.set(false)"><span>◎</span><strong>Profile</strong><small>Account and plan</small></a>
+            <a routerLink="/settings" (click)="mobileMoreOpen.set(false)"><span>⚙</span><strong>Settings</strong><small>Preferences</small></a>
+          </div>
+        </section>
+      }
+
       @if (showTour()) {
-        <div class="product-tour-backdrop" role="dialog" aria-modal="true" aria-labelledby="tour-title">
-          <section class="product-tour-card">
-            <div class="tour-progress" aria-label="Tutorial progress"><span [style.width.%]="((tourStep() + 1) / tourSteps.length) * 100"></span></div>
-            <div class="tour-header"><span class="tour-kicker">{{ tourSteps[tourStep()].kicker }}</span><button type="button" class="tour-close" (click)="finishTour()" aria-label="Close tutorial">×</button></div>
-            <h2 id="tour-title">{{ tourSteps[tourStep()].title }}</h2>
-            <p>{{ tourSteps[tourStep()].copy }}</p>
-            <div class="tour-footer"><span>Step {{ tourStep() + 1 }} of {{ tourSteps.length }}</span><div class="tour-actions">@if (tourStep() > 0) {<button type="button" class="lf-btn lf-btn-secondary" (click)="previousTourStep()">Back</button>}<a [routerLink]="tourSteps[tourStep()].link" class="tour-link" (click)="finishTour()">{{ tourSteps[tourStep()].action }}</a>@if (tourStep() < tourSteps.length - 1) {<button type="button" class="lf-btn lf-btn-primary" (click)="nextTourStep()">Next</button>} @else {<button type="button" class="lf-btn lf-btn-primary" (click)="finishTour()">Done</button>}</div></div>
-          </section>
-        </div>
+        <div class="product-tour-backdrop" role="dialog" aria-modal="true" aria-labelledby="tour-title"><section class="product-tour-card"><div class="tour-progress" aria-label="Tutorial progress"><span [style.width.%]="((tourStep() + 1) / tourSteps.length) * 100"></span></div><div class="tour-header"><span class="tour-kicker">{{ tourSteps[tourStep()].kicker }}</span><button type="button" class="tour-close" (click)="finishTour()" aria-label="Close tutorial">×</button></div><h2 id="tour-title">{{ tourSteps[tourStep()].title }}</h2><p>{{ tourSteps[tourStep()].copy }}</p><div class="tour-footer"><span>Step {{ tourStep() + 1 }} of {{ tourSteps.length }}</span><div class="tour-actions">@if (tourStep() > 0) {<button type="button" class="lf-btn lf-btn-secondary" (click)="previousTourStep()">Back</button>}<a [routerLink]="tourSteps[tourStep()].link" class="tour-link" (click)="finishTour()">{{ tourSteps[tourStep()].action }}</a>@if (tourStep() < tourSteps.length - 1) {<button type="button" class="lf-btn lf-btn-primary" (click)="nextTourStep()">Next</button>} @else {<button type="button" class="lf-btn lf-btn-primary" (click)="finishTour()">Done</button>}</div></div></section></div>
       }
 
       @if (notifications.toast(); as toast) {
@@ -146,6 +161,7 @@ export class AppComponent {
   readonly tourSteps = TOUR_STEPS;
   readonly tourStep = signal(0);
   readonly showTour = signal(false);
+  readonly mobileMoreOpen = signal(false);
   private readonly router = inject(Router);
   private readonly openGroups = signal<Record<NavGroup, boolean>>(this.loadNavState());
 
@@ -157,12 +173,14 @@ export class AppComponent {
       } else {
         this.notifications.stop();
         this.showTour.set(false);
+        this.mobileMoreOpen.set(false);
       }
     });
   }
 
   groupOpen(group: NavGroup) { return this.openGroups()[group]; }
   toggleGroup(group: NavGroup) { const current = this.openGroups(); const next = { ...current, [group]: !current[group] }; this.openGroups.set(next); localStorage.setItem('learnflow_nav_groups_v2', JSON.stringify(next)); }
+  toggleMobileMore() { this.mobileMoreOpen.update(open => !open); }
   logout() { this.auth.logout(); void this.router.navigateByUrl('/'); }
   openNotification(actionUrl: string) { this.notifications.dismissToast(); void this.router.navigateByUrl(actionUrl); }
   accountInitials() { const name = this.auth.user()?.name?.trim(); if (!name) return 'LF'; return name.split(/\s+/).slice(0, 2).map(part => part[0] ?? '').join('').toUpperCase(); }
