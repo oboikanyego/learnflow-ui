@@ -13,6 +13,8 @@ export const routes: Routes = [
   { path: 'onboarding', canActivate: [authGuard], loadComponent: () => import('./features/onboarding/onboarding.component').then(m => m.OnboardingComponent) },
   { path: 'today', canActivate: [authGuard], loadComponent: () => import('./features/today/today.component').then(m => m.TodayComponent) },
   { path: 'focus/:lessonId', canActivate: [authGuard], loadComponent: () => import('./features/focus/focus-session.component').then(m => m.FocusSessionComponent) },
+  { path: 'assess/:lessonId', canActivate: [authGuard], loadComponent: () => import('./features/assessment/assessment.component').then(m => m.AssessmentComponent) },
+  { path: 'mastery', canActivate: [authGuard], loadComponent: () => import('./features/assessment/mastery.component').then(m => m.MasteryComponent) },
   { path: 'study-history', canActivate: [authGuard], loadComponent: () => import('./features/focus/study-history.component').then(m => m.StudyHistoryComponent) },
   { path: 'retention', canActivate: [authGuard], loadComponent: () => import('./features/retention/retention.component').then(m => m.RetentionComponent) },
   { path: 'achievements', canActivate: [authGuard], loadComponent: () => import('./features/achievements/achievements.component').then(m => m.AchievementsComponent) },
