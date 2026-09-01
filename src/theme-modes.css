@@ -27,7 +27,6 @@ html[data-theme='dark']{
   --lf-theme-toggle-text:#f4f7ff;
   --lf-theme-toggle-border:#465671;
 
-  /* Angular Material / MDC surface + text tokens. */
   --mat-sys-background:#0b1120;
   --mat-sys-surface:#111827;
   --mat-sys-surface-container:#151f31;
@@ -39,203 +38,97 @@ html[data-theme='dark']{
   --mat-sys-outline:#607089;
 }
 
-.learnflow-theme-toggle{
-  position:fixed;
-  right:18px;
-  bottom:18px;
-  z-index:350;
-  min-height:42px;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:9px 13px;
-  border:1px solid var(--lf-theme-toggle-border);
-  border-radius:999px;
-  background:var(--lf-theme-toggle-bg);
-  color:var(--lf-theme-toggle-text);
-  box-shadow:0 10px 30px rgba(9,30,66,.18);
-  cursor:pointer;
-  font:700 .78rem/1 Inter,"Segoe UI",Arial,sans-serif;
-  transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease;
-}
-.learnflow-theme-toggle:hover{transform:translateY(-1px);box-shadow:0 14px 34px rgba(9,30,66,.24)}
-.learnflow-theme-toggle:focus-visible{outline:3px solid rgba(125,178,255,.45);outline-offset:2px}
-.theme-toggle-icon{font-size:1rem;line-height:1}
+.learnflow-theme-toggle{position:fixed;right:18px;bottom:18px;z-index:350;min-height:42px;display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid var(--lf-theme-toggle-border);border-radius:999px;background:var(--lf-theme-toggle-bg);color:var(--lf-theme-toggle-text);box-shadow:0 10px 30px rgba(9,30,66,.18);cursor:pointer;font:700 .78rem/1 Inter,"Segoe UI",Arial,sans-serif;transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}.learnflow-theme-toggle:hover{transform:translateY(-1px);box-shadow:0 14px 34px rgba(9,30,66,.24)}.learnflow-theme-toggle:focus-visible{outline:3px solid rgba(125,178,255,.45);outline-offset:2px}.theme-toggle-icon{font-size:1rem;line-height:1}
 
 html[data-theme='dark'] body{background:var(--lf-bg);color:var(--lf-text)}
-
-/* Global typography contrast. Feature components should inherit these values instead of
-   retaining text colors chosen for the light theme. */
-html[data-theme='dark'] h1,
-html[data-theme='dark'] h2,
-html[data-theme='dark'] h3,
-html[data-theme='dark'] h4,
-html[data-theme='dark'] h5,
-html[data-theme='dark'] h6,
-html[data-theme='dark'] legend,
-html[data-theme='dark'] label,
-html[data-theme='dark'] strong,
-html[data-theme='dark'] b,
-html[data-theme='dark'] dt,
-html[data-theme='dark'] th{color:var(--lf-text)}
-html[data-theme='dark'] p,
-html[data-theme='dark'] li,
-html[data-theme='dark'] dd,
-html[data-theme='dark'] td{color:inherit}
-html[data-theme='dark'] .muted,
-html[data-theme='dark'] small,
-html[data-theme='dark'] .helper-text,
-html[data-theme='dark'] .secondary-text,
-html[data-theme='dark'] .description,
-html[data-theme='dark'] .subtitle{color:var(--lf-muted)!important}
+html[data-theme='dark'] h1,html[data-theme='dark'] h2,html[data-theme='dark'] h3,html[data-theme='dark'] h4,html[data-theme='dark'] h5,html[data-theme='dark'] h6,html[data-theme='dark'] legend,html[data-theme='dark'] label,html[data-theme='dark'] strong,html[data-theme='dark'] b,html[data-theme='dark'] dt,html[data-theme='dark'] th{color:var(--lf-text)}
+html[data-theme='dark'] p,html[data-theme='dark'] li,html[data-theme='dark'] dd,html[data-theme='dark'] td{color:inherit}
+html[data-theme='dark'] .muted,html[data-theme='dark'] small,html[data-theme='dark'] .helper-text,html[data-theme='dark'] .secondary-text,html[data-theme='dark'] .description,html[data-theme='dark'] .subtitle{color:var(--lf-muted)!important}
 html[data-theme='dark'] a:not(.header-primary-action):not(.primary-cta):not(.create-work-item){color:inherit}
 
-html[data-theme='dark'] .app-header,
-html[data-theme='dark'] .workspace-topbar{background:rgba(11,17,32,.96)!important;border-color:var(--lf-border)!important;color:var(--lf-text)!important}
-html[data-theme='dark'] .public-shell,
-html[data-theme='dark'] .workspace-shell,
-html[data-theme='dark'] .jira-workspace{background:var(--lf-bg)!important;color:var(--lf-text)!important}
+html[data-theme='dark'] .app-header,html[data-theme='dark'] .workspace-topbar{background:rgba(11,17,32,.96)!important;border-color:var(--lf-border)!important;color:var(--lf-text)!important}
+html[data-theme='dark'] .public-shell,html[data-theme='dark'] .workspace-shell,html[data-theme='dark'] .jira-workspace{background:var(--lf-bg)!important;color:var(--lf-text)!important}
 html[data-theme='dark'] .workspace-sidebar{background:#0f1726!important;border-color:var(--lf-border)!important;color:var(--lf-text)!important}
-html[data-theme='dark'] .sidebar-brand strong,
-html[data-theme='dark'] .sidebar-space strong,
-html[data-theme='dark'] .sidebar-account,
-html[data-theme='dark'] .workspace-breadcrumb strong,
-html[data-theme='dark'] .toast-copy strong{color:var(--lf-text)!important}
-html[data-theme='dark'] .sidebar-brand small,
-html[data-theme='dark'] .sidebar-space small,
-html[data-theme='dark'] .sidebar-account small,
-html[data-theme='dark'] .space-chevron,
-html[data-theme='dark'] .workspace-breadcrumb,
-html[data-theme='dark'] .toast-copy p{color:var(--lf-muted)!important}
+html[data-theme='dark'] .sidebar-brand strong,html[data-theme='dark'] .sidebar-space strong,html[data-theme='dark'] .sidebar-account,html[data-theme='dark'] .workspace-breadcrumb strong,html[data-theme='dark'] .toast-copy strong{color:var(--lf-text)!important}
+html[data-theme='dark'] .sidebar-brand small,html[data-theme='dark'] .sidebar-space small,html[data-theme='dark'] .sidebar-account small,html[data-theme='dark'] .space-chevron,html[data-theme='dark'] .workspace-breadcrumb,html[data-theme='dark'] .toast-copy p{color:var(--lf-muted)!important}
 html[data-theme='dark'] .sidebar-nav a{color:#c5d1e3!important}
-html[data-theme='dark'] .sidebar-nav a:hover,
-html[data-theme='dark'] .sidebar-space:hover,
-html[data-theme='dark'] .sidebar-account:hover,
-html[data-theme='dark'] .topbar-icon:hover{background:#1c2738!important;color:#f4f7ff!important}
+html[data-theme='dark'] .sidebar-nav a:hover,html[data-theme='dark'] .sidebar-space:hover,html[data-theme='dark'] .sidebar-account:hover,html[data-theme='dark'] .topbar-icon:hover{background:#1c2738!important;color:#f4f7ff!important}
 html[data-theme='dark'] .sidebar-nav a.active{background:#172b4d!important;color:#9bc2ff!important}
 html[data-theme='dark'] .sidebar-footer{border-color:var(--lf-border)!important}
 html[data-theme='dark'] .topbar-icon{color:#c5d1e3!important}
 html[data-theme='dark'] .notification-badge{border-color:#0b1120!important}
 
-html[data-theme='dark'] .stats article,
-html[data-theme='dark'] .ticket,
-html[data-theme='dark'] .notification,
-html[data-theme='dark'] .hero-product-card,
-html[data-theme='dark'] .feature-card,
-html[data-theme='dark'] .phase-card,
-html[data-theme='dark'] .card-grid mat-card,
-html[data-theme='dark'] .app-toast,
-html[data-theme='dark'] .card,
-html[data-theme='dark'] .panel,
-html[data-theme='dark'] .content-card{background:var(--lf-surface)!important;border-color:var(--lf-border)!important;color:var(--lf-text)!important;box-shadow:var(--lf-shadow)!important}
-html[data-theme='dark'] .module,
-html[data-theme='dark'] .preview-grid article{background:var(--lf-surface-2)!important;border-color:var(--lf-border)!important;color:var(--lf-text)!important}
+html[data-theme='dark'] .stats article,html[data-theme='dark'] .ticket,html[data-theme='dark'] .notification,html[data-theme='dark'] .hero-product-card,html[data-theme='dark'] .feature-card,html[data-theme='dark'] .phase-card,html[data-theme='dark'] .card-grid mat-card,html[data-theme='dark'] .app-toast,html[data-theme='dark'] .card,html[data-theme='dark'] .panel,html[data-theme='dark'] .content-card{background:var(--lf-surface)!important;border-color:var(--lf-border)!important;color:var(--lf-text)!important;box-shadow:var(--lf-shadow)!important}
+html[data-theme='dark'] .module,html[data-theme='dark'] .preview-grid article{background:var(--lf-surface-2)!important;border-color:var(--lf-border)!important;color:var(--lf-text)!important}
 html[data-theme='dark'] .lesson{border-color:var(--lf-border)!important;color:var(--lf-text)!important}
-html[data-theme='dark'] .lesson small,
-html[data-theme='dark'] .ticket small{color:var(--lf-muted)!important}
+html[data-theme='dark'] .lesson small,html[data-theme='dark'] .ticket small{color:var(--lf-muted)!important}
 html[data-theme='dark'] .column{background:#111a2a!important;border-color:var(--lf-border)!important;color:var(--lf-text)!important}
 html[data-theme='dark'] .column h3{color:#d7e1f0!important}
 html[data-theme='dark'] .column h3 span{background:#1a2537!important;border-color:var(--lf-border)!important;color:#e8f0fb!important}
 html[data-theme='dark'] .notification.unread{background:#111d31!important}
 
-html[data-theme='dark'] table,
-html[data-theme='dark'] .mat-mdc-table{background:var(--lf-surface)!important;color:var(--lf-text)!important}
-html[data-theme='dark'] .mat-mdc-header-row,
-html[data-theme='dark'] .mat-mdc-row,
-html[data-theme='dark'] .mat-mdc-footer-row{background:transparent!important;color:var(--lf-text)!important}
+html[data-theme='dark'] table,html[data-theme='dark'] .mat-mdc-table{background:var(--lf-surface)!important;color:var(--lf-text)!important}
+html[data-theme='dark'] .mat-mdc-header-row,html[data-theme='dark'] .mat-mdc-row,html[data-theme='dark'] .mat-mdc-footer-row{background:transparent!important;color:var(--lf-text)!important}
 html[data-theme='dark'] .mat-mdc-header-cell{color:#dbe6f6!important;border-color:var(--lf-border)!important}
-html[data-theme='dark'] .mat-mdc-cell,
-html[data-theme='dark'] .mat-mdc-footer-cell{color:var(--lf-text)!important;border-color:var(--lf-border)!important}
+html[data-theme='dark'] .mat-mdc-cell,html[data-theme='dark'] .mat-mdc-footer-cell{color:var(--lf-text)!important;border-color:var(--lf-border)!important}
 
-html[data-theme='dark'] input,
-html[data-theme='dark'] textarea,
-html[data-theme='dark'] select,
-html[data-theme='dark'] option,
-html[data-theme='dark'] input[type=datetime-local],
-html[data-theme='dark'] input[type=file]{background:#101827!important;color:var(--lf-text)!important;border-color:var(--lf-border-strong)!important}
-html[data-theme='dark'] input::placeholder,
-html[data-theme='dark'] textarea::placeholder{color:#91a0b5!important;opacity:1}
-html[data-theme='dark'] input:disabled,
-html[data-theme='dark'] textarea:disabled,
-html[data-theme='dark'] select:disabled{color:#8593a7!important;-webkit-text-fill-color:#8593a7!important;opacity:1}
+html[data-theme='dark'] input,html[data-theme='dark'] textarea,html[data-theme='dark'] select,html[data-theme='dark'] option,html[data-theme='dark'] input[type=datetime-local],html[data-theme='dark'] input[type=file]{background:#101827!important;color:var(--lf-text)!important;border-color:var(--lf-border-strong)!important}
+html[data-theme='dark'] input::placeholder,html[data-theme='dark'] textarea::placeholder{color:#91a0b5!important;opacity:1}
+html[data-theme='dark'] input:disabled,html[data-theme='dark'] textarea:disabled,html[data-theme='dark'] select:disabled{color:#8593a7!important;-webkit-text-fill-color:#8593a7!important;opacity:1}
 
 html[data-theme='dark'] .hero-grid{background:radial-gradient(circle at 85% 20%,#13213a 0,#0b1120 44%),linear-gradient(180deg,#0b1120,#0e1627)!important}
-html[data-theme='dark'] .hero-copy h1,
-html[data-theme='dark'] .feature-card h3,
-html[data-theme='dark'] .product-card-head strong,
-html[data-theme='dark'] .progress-copy strong,
-html[data-theme='dark'] .preview-grid span,
-html[data-theme='dark'] .stats strong,
-html[data-theme='dark'] .dialog-shell h2{color:#eef4ff!important}
-html[data-theme='dark'] .hero-lead,
-html[data-theme='dark'] .feature-card p,
-html[data-theme='dark'] .home-cta p,
-html[data-theme='dark'] .trust-row{color:var(--lf-muted)!important}
+html[data-theme='dark'] .hero-copy h1,html[data-theme='dark'] .feature-card h3,html[data-theme='dark'] .product-card-head strong,html[data-theme='dark'] .progress-copy strong,html[data-theme='dark'] .preview-grid span,html[data-theme='dark'] .stats strong,html[data-theme='dark'] .dialog-shell h2{color:#eef4ff!important}
+html[data-theme='dark'] .hero-lead,html[data-theme='dark'] .feature-card p,html[data-theme='dark'] .home-cta p,html[data-theme='dark'] .trust-row{color:var(--lf-muted)!important}
 html[data-theme='dark'] .progress-track{background:#243044!important}
-html[data-theme='dark'] .next-session,
-html[data-theme='dark'] .workflow-band{background:linear-gradient(135deg,#142d50,#1d3f67)!important;color:#fff!important}
-html[data-theme='dark'] .next-session *,
-html[data-theme='dark'] .workflow-band *{color:inherit}
-html[data-theme='dark'] .header-primary-action,
-html[data-theme='dark'] .primary-cta,
-html[data-theme='dark'] .create-work-item{background:#2f6fed!important;color:#fff!important}
+html[data-theme='dark'] .next-session,html[data-theme='dark'] .workflow-band{background:linear-gradient(135deg,#142d50,#1d3f67)!important;color:#fff!important}
+html[data-theme='dark'] .next-session *,html[data-theme='dark'] .workflow-band *{color:inherit}
+html[data-theme='dark'] .header-primary-action,html[data-theme='dark'] .primary-cta,html[data-theme='dark'] .create-work-item{background:#2f6fed!important;color:#fff!important}
 html[data-theme='dark'] .header-ghost-action{background:#121c2d!important;border-color:var(--lf-border)!important;color:#e1e9f5!important}
-html[data-theme='dark'] .workspace-nav a,
-html[data-theme='dark'] .public-nav a{color:#c5d1e3!important}
-html[data-theme='dark'] .workspace-nav a:hover,
-html[data-theme='dark'] .public-nav a:hover,
-html[data-theme='dark'] .workspace-nav a.active{background:#172235!important;color:#f0f5ff!important}
+html[data-theme='dark'] .workspace-nav a,html[data-theme='dark'] .public-nav a{color:#c5d1e3!important}
+html[data-theme='dark'] .workspace-nav a:hover,html[data-theme='dark'] .public-nav a:hover,html[data-theme='dark'] .workspace-nav a.active{background:#172235!important;color:#f0f5ff!important}
+
+/* Signed-out/public pages: override component-local light colors. */
+html[data-theme='dark'] .landing,html[data-theme='dark'] .public-info-page,html[data-theme='dark'] .contact-page,html[data-theme='dark'] .auth-layout{background:var(--lf-bg)!important;color:var(--lf-text)!important}
+html[data-theme='dark'] .landing-hero{background:radial-gradient(circle at 80% 18%,rgba(47,111,237,.18),transparent 34%),linear-gradient(180deg,#0b1120 0%,#0d1526 100%)!important}
+html[data-theme='dark'] .hero-copy h1,html[data-theme='dark'] .section-intro h2,html[data-theme='dark'] .landing-cta h2,html[data-theme='dark'] .public-info-hero h1,html[data-theme='dark'] .public-info-grid h3,html[data-theme='dark'] .contact-copy h1,html[data-theme='dark'] .contact-points strong,html[data-theme='dark'] .prepared-message strong,html[data-theme='dark'] .auth-context h1{color:var(--lf-text)!important}
+html[data-theme='dark'] .hero-copy>p,html[data-theme='dark'] .hero-proof,html[data-theme='dark'] .section-intro p,html[data-theme='dark'] .capability-card p,html[data-theme='dark'] .landing-cta p,html[data-theme='dark'] .public-info-hero p,html[data-theme='dark'] .public-info-grid p,html[data-theme='dark'] .contact-copy>p,html[data-theme='dark'] .contact-points span,html[data-theme='dark'] .prepared-message p,html[data-theme='dark'] .auth-context>p,html[data-theme='dark'] .auth-points,html[data-theme='dark'] .auth-switch{color:var(--lf-muted)!important}
+html[data-theme='dark'] .hero-badge{background:#111c2f!important;border-color:#2d4263!important;color:#d9e4f4!important}
+html[data-theme='dark'] .hero-proof{border-color:var(--lf-border)!important}
+html[data-theme='dark'] .product-window{background:var(--lf-surface)!important;border-color:var(--lf-border)!important;box-shadow:0 32px 80px rgba(0,0,0,.38)!important}
+html[data-theme='dark'] .window-bar{background:#101827!important;border-color:var(--lf-border)!important}
+html[data-theme='dark'] .window-brand,html[data-theme='dark'] .window-meta,html[data-theme='dark'] .window-nav span,html[data-theme='dark'] .preview-head small,html[data-theme='dark'] .preview-progress span,html[data-theme='dark'] .preview-stats span{color:var(--lf-muted)!important}
+html[data-theme='dark'] .window-nav{background:#0f1726!important;border-color:var(--lf-border)!important}
+html[data-theme='dark'] .window-nav .nav-active{background:#172b4d!important;color:#9bc2ff!important}
+html[data-theme='dark'] .preview-head h3,html[data-theme='dark'] .preview-progress strong,html[data-theme='dark'] .preview-stats strong{color:var(--lf-text)!important}
+html[data-theme='dark'] .preview-stats article{background:#151f31!important;border-color:var(--lf-border)!important}
+html[data-theme='dark'] .value-strip{background:#0f1726!important;border-color:var(--lf-border)!important;color:var(--lf-muted)!important}
+html[data-theme='dark'] .value-strip>span{color:var(--lf-text)!important}
+html[data-theme='dark'] .capability-card,html[data-theme='dark'] .public-info-grid article,html[data-theme='dark'] .contact-card,html[data-theme='dark'] .auth-card{background:var(--lf-surface)!important;border-color:var(--lf-border)!important;color:var(--lf-text)!important;box-shadow:var(--lf-shadow)!important}
+html[data-theme='dark'] .capability-card.featured{background:linear-gradient(145deg,#131e31,#111827)!important;border-color:#334a70!important}
+html[data-theme='dark'] .capability-icon{background:#172b4d!important;color:#9bc2ff!important}
+html[data-theme='dark'] .contact-points>div,html[data-theme='dark'] .prepared-message{background:var(--lf-surface-2)!important;border-color:var(--lf-border)!important}
+html[data-theme='dark'] .prepared-message pre{background:#0d1526!important;color:#d9e4f4!important;border-color:var(--lf-border)!important}
+html[data-theme='dark'] .auth-layout{background:radial-gradient(circle at 10% 15%,#13213a,transparent 38%),#0b1120!important}
+html[data-theme='dark'] .auth-card h1,html[data-theme='dark'] .auth-card h2,html[data-theme='dark'] .auth-card h3{color:var(--lf-text)!important}
+html[data-theme='dark'] .public-info-band,html[data-theme='dark'] .contact-footer-cta,html[data-theme='dark'] .operating-band{background:radial-gradient(circle at 90% 10%,rgba(83,177,253,.16),transparent 30%),#101828!important;color:#fff!important}
+html[data-theme='dark'] .public-info-band *,html[data-theme='dark'] .contact-footer-cta *,html[data-theme='dark'] .operating-band *{color:inherit}
+html[data-theme='dark'] .public-info-band p,html[data-theme='dark'] .band-copy p,html[data-theme='dark'] .band-steps p{color:#b8c5d7!important}
+html[data-theme='dark'] .band-steps article{background:rgba(255,255,255,.055)!important;border-color:rgba(255,255,255,.13)!important}
+html[data-theme='dark'] .stage-glow{background:radial-gradient(circle,#1d3d70 0,rgba(29,61,112,.38) 38%,transparent 72%)!important}
+html[data-theme='dark'] .health-pill{background:#123427!important;color:#6ee7b7!important}
+html[data-theme='dark'] .next-card{background:#07101f!important;color:#fff!important}
+html[data-theme='dark'] .next-card strong{color:#fff!important}
 
 /* Angular Material dark-mode text contrast. */
-html[data-theme='dark'] .mat-mdc-card,
-html[data-theme='dark'] .mat-mdc-dialog-surface,
-html[data-theme='dark'] .mat-mdc-menu-panel,
-html[data-theme='dark'] .mat-mdc-select-panel,
-html[data-theme='dark'] .mat-mdc-autocomplete-panel,
-html[data-theme='dark'] .mat-datepicker-content,
-html[data-theme='dark'] .mat-mdc-tooltip-surface{background:var(--lf-surface)!important;color:var(--lf-text)!important}
+html[data-theme='dark'] .mat-mdc-card,html[data-theme='dark'] .mat-mdc-dialog-surface,html[data-theme='dark'] .mat-mdc-menu-panel,html[data-theme='dark'] .mat-mdc-select-panel,html[data-theme='dark'] .mat-mdc-autocomplete-panel,html[data-theme='dark'] .mat-datepicker-content,html[data-theme='dark'] .mat-mdc-tooltip-surface{background:var(--lf-surface)!important;color:var(--lf-text)!important}
 html[data-theme='dark'] .mat-mdc-dialog-surface{border-color:var(--lf-border)!important}
-html[data-theme='dark'] .mat-mdc-card-title,
-html[data-theme='dark'] .mat-mdc-card-subtitle,
-html[data-theme='dark'] .mat-mdc-dialog-title,
-html[data-theme='dark'] .mat-mdc-form-field,
-html[data-theme='dark'] .mat-mdc-input-element,
-html[data-theme='dark'] .mat-mdc-select-value,
-html[data-theme='dark'] .mat-mdc-select-value-text,
-html[data-theme='dark'] .mat-mdc-select-arrow,
-html[data-theme='dark'] .mat-mdc-option,
-html[data-theme='dark'] .mat-mdc-menu-item,
-html[data-theme='dark'] .mat-mdc-button,
-html[data-theme='dark'] .mat-mdc-icon-button,
-html[data-theme='dark'] .mat-mdc-checkbox,
-html[data-theme='dark'] .mat-mdc-radio-button,
-html[data-theme='dark'] .mat-mdc-slide-toggle{color:var(--lf-text)!important}
-html[data-theme='dark'] .mat-mdc-form-field-label,
-html[data-theme='dark'] .mdc-floating-label,
-html[data-theme='dark'] .mat-mdc-form-field-hint,
-html[data-theme='dark'] .mat-mdc-form-field-error,
-html[data-theme='dark'] .mat-mdc-select-placeholder{color:#b8c5d7!important}
-html[data-theme='dark'] .mat-mdc-option .mdc-list-item__primary-text,
-html[data-theme='dark'] .mat-mdc-menu-item .mat-mdc-menu-item-text,
-html[data-theme='dark'] .mdc-label{color:var(--lf-text)!important}
-html[data-theme='dark'] .mdc-text-field--filled:not(.mdc-text-field--disabled),
-html[data-theme='dark'] .mdc-text-field--outlined:not(.mdc-text-field--disabled){background:#101827!important}
-html[data-theme='dark'] .mdc-text-field--disabled,
-html[data-theme='dark'] .mat-mdc-form-field.mat-form-field-disabled{color:#8796aa!important}
-
-/* Date picker and popup copy. */
-html[data-theme='dark'] .mat-calendar,
-html[data-theme='dark'] .mat-calendar-body-label,
-html[data-theme='dark'] .mat-calendar-body-cell-content,
-html[data-theme='dark'] .mat-calendar-table-header,
-html[data-theme='dark'] .mat-calendar-period-button,
-html[data-theme='dark'] .mat-calendar-previous-button,
-html[data-theme='dark'] .mat-calendar-next-button{color:var(--lf-text)!important}
+html[data-theme='dark'] .mat-mdc-card-title,html[data-theme='dark'] .mat-mdc-card-subtitle,html[data-theme='dark'] .mat-mdc-dialog-title,html[data-theme='dark'] .mat-mdc-form-field,html[data-theme='dark'] .mat-mdc-input-element,html[data-theme='dark'] .mat-mdc-select-value,html[data-theme='dark'] .mat-mdc-select-value-text,html[data-theme='dark'] .mat-mdc-select-arrow,html[data-theme='dark'] .mat-mdc-option,html[data-theme='dark'] .mat-mdc-menu-item,html[data-theme='dark'] .mat-mdc-button,html[data-theme='dark'] .mat-mdc-icon-button,html[data-theme='dark'] .mat-mdc-checkbox,html[data-theme='dark'] .mat-mdc-radio-button,html[data-theme='dark'] .mat-mdc-slide-toggle{color:var(--lf-text)!important}
+html[data-theme='dark'] .mat-mdc-form-field-label,html[data-theme='dark'] .mdc-floating-label,html[data-theme='dark'] .mat-mdc-form-field-hint,html[data-theme='dark'] .mat-mdc-form-field-error,html[data-theme='dark'] .mat-mdc-select-placeholder{color:#b8c5d7!important}
+html[data-theme='dark'] .mat-mdc-option .mdc-list-item__primary-text,html[data-theme='dark'] .mat-mdc-menu-item .mat-mdc-menu-item-text,html[data-theme='dark'] .mdc-label{color:var(--lf-text)!important}
+html[data-theme='dark'] .mdc-text-field--filled:not(.mdc-text-field--disabled),html[data-theme='dark'] .mdc-text-field--outlined:not(.mdc-text-field--disabled){background:#101827!important}
+html[data-theme='dark'] .mdc-text-field--disabled,html[data-theme='dark'] .mat-mdc-form-field.mat-form-field-disabled{color:#8796aa!important}
+html[data-theme='dark'] .mat-calendar,html[data-theme='dark'] .mat-calendar-body-label,html[data-theme='dark'] .mat-calendar-body-cell-content,html[data-theme='dark'] .mat-calendar-table-header,html[data-theme='dark'] .mat-calendar-period-button,html[data-theme='dark'] .mat-calendar-previous-button,html[data-theme='dark'] .mat-calendar-next-button{color:var(--lf-text)!important}
 html[data-theme='dark'] .mat-calendar-body-disabled>.mat-calendar-body-cell-content{color:#748299!important}
 
-@media(max-width:700px){
-  .learnflow-theme-toggle{bottom:72px;right:12px;min-width:42px;padding:10px}
-  .theme-toggle-label{display:none}
-}
-
+@media(max-width:700px){.learnflow-theme-toggle{bottom:72px;right:12px;min-width:42px;padding:10px}.theme-toggle-label{display:none}}
 @media(prefers-reduced-motion:reduce){.learnflow-theme-toggle{transition:none}}
