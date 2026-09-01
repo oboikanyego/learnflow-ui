@@ -10,6 +10,7 @@ export const routes: Routes = [
   { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password.component').then(m => m.ForgotPasswordComponent) },
   { path: 'reset-password', loadComponent: () => import('./features/auth/reset-password.component').then(m => m.ResetPasswordComponent) },
   { path: 'onboarding', canActivate: [authGuard], loadComponent: () => import('./features/onboarding/onboarding.component').then(m => m.OnboardingComponent) },
+  { path: 'today', canActivate: [authGuard], loadComponent: () => import('./features/today/today.component').then(m => m.TodayComponent) },
   { path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
   { path: 'progress', canActivate: [authGuard], loadComponent: () => import('./features/progress/progress.component').then(m => m.ProgressComponent) },
   { path: 'goals', canActivate: [authGuard], loadComponent: () => import('./features/goals/goals.component').then(m => m.GoalsComponent) },
