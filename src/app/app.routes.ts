@@ -21,6 +21,7 @@ export const routes: Routes = [
   { path: 'social/groups/:groupId', canActivate: [authGuard], loadComponent: () => import('./features/social/social-group.component').then(m => m.SocialGroupComponent) },
   { path: 'career', canActivate: [authGuard], loadComponent: () => import('./features/career/career.component').then(m => m.CareerComponent) },
   { path: 'career/jobs', canActivate: [authGuard], loadComponent: () => import('./features/career/job-match.component').then(m => m.JobMatchComponent) },
+  { path: 'career/applications', canActivate: [authGuard], loadComponent: () => import('./features/career/application-workspace.component').then(m => m.ApplicationWorkspaceComponent) },
   { path: 'achievements', canActivate: [authGuard], loadComponent: () => import('./features/achievements/achievements.component').then(m => m.AchievementsComponent) },
   { path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
   { path: 'progress', canActivate: [authGuard], loadComponent: () => import('./features/progress/progress.component').then(m => m.ProgressComponent) },
