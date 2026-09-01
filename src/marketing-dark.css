@@ -1,0 +1,32 @@
+/* Final public-theme compatibility layer. */
+html[data-theme='dark'] .marketing-page{background:#0b1220!important;color:#f4f7fb!important}
+html[data-theme='dark'] .proof-bar{background:#0f1726!important;border-color:#29364b!important}
+html[data-theme='dark'] .proof-bar p,html[data-theme='dark'] .proof-bar span{color:#c0cada!important}
+html[data-theme='dark'] .proof-bar i{background:#3a4a63!important}
+html[data-theme='dark'] .intro-section,html[data-theme='dark'] .feature-layout,html[data-theme='dark'] .final-cta{background:#0b1220!important}
+html[data-theme='dark'] .section-split h2,html[data-theme='dark'] .final-cta h2{color:#f4f7fb!important}
+html[data-theme='dark'] .section-split p,html[data-theme='dark'] .final-cta p,html[data-theme='dark'] .story-copy p{color:#aebbd0!important}
+html[data-theme='dark'] .feature-story{background:#111a2a!important;border-color:#29364b!important}
+html[data-theme='dark'] .feature-story-large{background:#0f1929!important}
+html[data-theme='dark'] .story-copy h3{color:#f4f7fb!important}
+html[data-theme='dark'] .story-icon{background:#19263a!important;color:#c4d3e8!important}
+html[data-theme='dark'] .mini-schedule{background:#111a2a!important;border-color:#29364b!important;box-shadow:0 10px 34px rgba(0,0,0,.2)!important}
+html[data-theme='dark'] .schedule-head strong{color:#eef4ff!important}
+html[data-theme='dark'] .schedule-head span,html[data-theme='dark'] .schedule-row b{color:#98a7bc!important}
+html[data-theme='dark'] .schedule-row{border-color:#29364b!important}
+html[data-theme='dark'] .schedule-block.blue{background:#172b4d!important;color:#9fc5ff!important}
+html[data-theme='dark'] .schedule-block.navy{background:#1a2639!important;color:#d3deec!important}
+html[data-theme='dark'] .schedule-block.mint{background:#123427!important;color:#7be0ae!important}
+html[data-theme='dark'] .final-cta .hero-primary{background:#6ea8ff!important;border-color:#6ea8ff!important;color:#081426!important}
+html[data-theme='dark'] .final-cta .hero-primary:hover{background:#8bbaff!important;border-color:#8bbaff!important;color:#081426!important}
+html[data-theme='dark'] .section-label{color:#8bbaff!important}
+
+/* The landing video remains intentionally dark in both modes for predictable contrast. */
+html[data-theme='dark'] .video-hero{background:#08111f!important}
+html[data-theme='dark'] .hero-copy h1,html[data-theme='dark'] .hero-copy h1 strong{color:#fff!important}
+html[data-theme='dark'] .hero-copy h1 strong{color:#9fc5ff!important}
+html[data-theme='dark'] .hero-copy>p{color:#c8d4e5!important}
+
+/* Explicitly protect public CTAs from older theme selectors. */
+html[data-theme='light'] .public-header .header-primary-action{background:#175cd3!important;color:#fff!important;border-color:#175cd3!important}
+html[data-theme='dark'] .public-header .header-primary-action{background:#6ea8ff!important;color:#081426!important;border-color:#6ea8ff!important}
