@@ -12,48 +12,58 @@ interface LessonLike { _id:string; title:string; scheduledAt?:string; durationMi
   template:`
     <section class="today page-enter">
       <div class="page-head">
-        <div><span class="eyebrow">Today</span><h1>Your next learning move</h1><p class="muted">One place to see what matters now, protect your schedule and recover momentum.</p></div>
-        <div class="head-actions"><a mat-stroked-button routerLink="/study-history">Study history</a><a mat-stroked-button routerLink="/goals">Review goals</a></div>
+        <div><span class="eyebrow">Today</span><h1>Keep learning moving.</h1><p class="muted">Start with the next session. Use the rest of the page only when you need it.</p></div>
+        <div class="head-actions"><a mat-stroked-button routerLink="/study-history">Study history</a><a mat-stroked-button routerLink="/goals">Goals</a></div>
       </div>
 
       @if(stats();as s){
         @if(nextLesson(s);as lesson){
-          <section class="hero-card">
-            <div class="hero-copy"><span class="mini-label">Next scheduled session</span><h2>{{lesson.title}}</h2><p>{{formatFull(lesson.scheduledAt)}} · {{lesson.durationMinutes}} minutes</p><div class="hero-actions"><a mat-flat-button class="primary-cta" [routerLink]="['/focus',lesson._id]">Start focus session</a><a mat-stroked-button routerLink="/board">Open board</a><button mat-stroked-button (click)="downloadIcs(lesson)">Download .ics</button></div></div>
-            <div class="calendar-card"><strong>Add to calendar</strong><a [href]="googleCalendarUrl(lesson)" target="_blank" rel="noopener">Google Calendar ↗</a><a [href]="outlookCalendarUrl(lesson)" target="_blank" rel="noopener">Outlook ↗</a><small>Keep LearnFlow and your real calendar aligned.</small></div>
+          <section class="next-panel">
+            <div class="next-main">
+              <span class="next-label">Next session</span>
+              <h2>{{lesson.title}}</h2>
+              <p class="next-meta">{{formatFull(lesson.scheduledAt)}} <span>•</span> {{lesson.durationMinutes}} minutes</p>
+              <div class="next-actions"><a mat-flat-button [routerLink]="['/focus',lesson._id]">Start session</a><a mat-stroked-button routerLink="/board">View board</a></div>
+            </div>
+            <aside class="schedule-tools">
+              <span class="schedule-label">Schedule tools</span>
+              <button type="button" class="schedule-action" (click)="downloadIcs(lesson)"><span>Download calendar file</span><small>.ics</small></button>
+              <a class="schedule-action" [href]="googleCalendarUrl(lesson)" target="_blank" rel="noopener"><span>Add to Google Calendar</span><small>↗</small></a>
+              <a class="schedule-action" [href]="outlookCalendarUrl(lesson)" target="_blank" rel="noopener"><span>Add to Outlook</span><small>↗</small></a>
+            </aside>
           </section>
         } @else {
-          <section class="empty-hero"><strong>Your calendar is clear.</strong><span>Schedule your next lesson or let AI Planner build a realistic week.</span><div><a mat-flat-button class="primary-cta" routerLink="/ai-planner">Plan with AI</a><a mat-stroked-button routerLink="/board">Open board</a></div></section>
+          <section class="empty-next"><div><span class="next-label">Nothing scheduled</span><h2>Your learning calendar is clear.</h2><p>Choose an existing lesson from the board or create a realistic plan for the week.</p></div><div class="next-actions"><a mat-flat-button routerLink="/ai-planner">Create plan</a><a mat-stroked-button routerLink="/board">Open board</a></div></section>
         }
 
-        <section class="signal-grid">
+        <section class="signal-grid" aria-label="Learning summary">
           <article><span>Learning health</span><strong>{{healthLabel(s)}}</strong><small>{{healthCopy(s)}}</small></article>
-          <article><span>Focused this week</span><strong>{{s.focusMinutesThisWeek ?? 0}} min</strong><small>{{(s.sessionsCompleted ?? 0)}} completed focus sessions recorded.</small></article>
-          <article [class.alert]="s.missedLessons>0"><span>Recovery queue</span><strong>{{s.missedLessons}}</strong><small>{{s.missedLessons ? 'Missed lessons need a new date.' : 'Nothing is currently overdue.'}}</small></article>
-          <article><span>Current streak</span><strong>{{s.currentStreakDays}} days</strong><small>{{s.currentStreakDays ? 'Protect the habit with the next scheduled session.' : 'Complete one lesson to restart momentum.'}}</small></article>
+          <article><span>Focus this week</span><strong>{{s.focusMinutesThisWeek ?? 0}} min</strong><small>{{s.sessionsCompleted ?? 0}} completed sessions</small></article>
+          <article [class.alert]="s.missedLessons>0"><span>Needs rescheduling</span><strong>{{s.missedLessons}}</strong><small>{{s.missedLessons ? 'Missed lessons are waiting for a new date.' : 'Nothing is overdue.'}}</small></article>
+          <article><span>Current streak</span><strong>{{s.currentStreakDays}} days</strong><small>{{s.currentStreakDays ? 'Keep the next commitment realistic.' : 'Complete one lesson to start again.'}}</small></article>
         </section>
 
         <section class="week-card">
-          <div class="week-head"><div><span class="mini-label">Coming up</span><h3>Your next sessions</h3></div><a routerLink="/board">Manage schedule →</a></div>
+          <div class="week-head"><div><span class="mini-label">Schedule</span><h3>Coming up</h3></div><a routerLink="/board">Manage schedule</a></div>
           <div class="lesson-list">
             @for(lesson of s.nextLessons;track lesson._id){
-              <article><div class="date"><strong>{{day(lesson.scheduledAt)}}</strong><span>{{month(lesson.scheduledAt)}}</span></div><div class="lesson-copy"><strong>{{lesson.title}}</strong><small>{{formatFull(lesson.scheduledAt)}} · {{lesson.durationMinutes}} min</small></div><div class="row-actions"><a mat-button [routerLink]="['/focus',lesson._id]">Focus</a><button mat-button (click)="downloadIcs(lesson)">.ics</button></div></article>
-            } @empty { <div class="empty-row">No upcoming sessions yet.</div> }
+              <article><div class="date"><strong>{{day(lesson.scheduledAt)}}</strong><span>{{month(lesson.scheduledAt)}}</span></div><div class="lesson-copy"><strong>{{lesson.title}}</strong><small>{{formatFull(lesson.scheduledAt)}} · {{lesson.durationMinutes}} min</small></div><div class="row-actions"><a mat-button [routerLink]="['/focus',lesson._id]">Start</a><button mat-button (click)="downloadIcs(lesson)">Calendar</button></div></article>
+            } @empty { <div class="empty-row">No upcoming sessions. Add one from your board when you are ready.</div> }
           </div>
         </section>
-      } @else { <div class="loading-card">Preparing your learning day…</div> }
+      } @else { <div class="loading-card">Loading your day…</div> }
     </section>
   `,
   styles:[`
-    .today{max-width:1180px;margin:0 auto}.head-actions{display:flex;gap:8px;flex-wrap:wrap}.hero-card{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.7fr);gap:20px;padding:28px;border-radius:22px;background:linear-gradient(135deg,#10233f,#193f6d);color:#fff;margin-bottom:18px;box-shadow:0 18px 44px rgba(16,35,63,.16)}.hero-copy h2{font-size:2rem;margin:8px 0}.hero-copy p{color:#c8d6e8}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.hero-actions .mat-mdc-outlined-button{color:#fff;border-color:#7087a7}.calendar-card{display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}.calendar-card a{color:#fff;text-decoration:none;padding:9px 10px;border-radius:9px;background:rgba(255,255,255,.1);font-weight:700}.calendar-card small{color:#c8d6e8}.signal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.signal-grid article{padding:18px;border:1px solid #dfe5ed;border-radius:16px;background:#fff}.signal-grid article.alert{border-color:#f0b8bd;background:#fff8f8}.signal-grid span{display:block;color:#7a869a;font-size:.68rem;font-weight:800;text-transform:uppercase}.signal-grid strong{display:block;color:#10233f;font-size:1.45rem;margin:6px 0}.signal-grid small{color:#66758a}.week-card{padding:22px;border:1px solid #dfe5ed;border-radius:18px;background:#fff}.week-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.week-head h3{margin:3px 0}.week-head a{color:#2f6fed;font-weight:800;text-decoration:none;font-size:.76rem}.lesson-list article{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid #edf1f5}.date{width:50px;height:50px;border-radius:12px;background:#eef4ff;color:#2f6fed;display:grid;place-items:center;align-content:center}.date strong{line-height:1}.date span{font-size:.62rem;text-transform:uppercase}.lesson-copy{display:flex;flex-direction:column}.lesson-copy strong{color:#10233f}.lesson-copy small{color:#7a869a;margin-top:3px}.row-actions{display:flex;gap:2px}.empty-hero,.loading-card{padding:34px;border:1px dashed #ccd7e5;border-radius:18px;background:#fff;margin-bottom:18px;display:flex;flex-direction:column;gap:8px}.empty-hero>div{display:flex;gap:10px;margin-top:8px}.empty-row{padding:18px;color:#7a869a}@media(max-width:900px){.hero-card{grid-template-columns:1fr}.signal-grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.signal-grid{grid-template-columns:1fr}.lesson-list article{grid-template-columns:52px 1fr}.row-actions{grid-column:2}.hero-actions,.empty-hero>div{flex-direction:column}.head-actions{width:100%}}
+    .today{max-width:1160px;margin:0 auto}.head-actions{display:flex;gap:8px;flex-wrap:wrap}.next-panel{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(250px,.65fr);border:1px solid #e4e7ec;border-radius:12px;background:#fff;margin-bottom:14px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden}.next-main{padding:28px}.next-label,.schedule-label{display:block;color:#667085;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.next-main h2{font-size:1.6rem;margin:8px 0 7px;color:#101828}.next-meta{margin:0;color:#667085}.next-meta span{padding:0 3px;color:#b0b7c3}.next-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}.schedule-tools{padding:18px;border-left:1px solid #eaecf0;background:#f9fafb}.schedule-label{margin:3px 8px 10px}.schedule-action{width:100%;min-height:40px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 10px;border:0;border-radius:7px;background:transparent;color:#344054;text-decoration:none;text-align:left;font:inherit;font-weight:650;cursor:pointer}.schedule-action:hover{background:#fff}.schedule-action small{color:#98a2b3}.signal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.signal-grid article{padding:17px;border:1px solid #e4e7ec;border-radius:10px;background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.025)}.signal-grid article.alert{border-color:#fecdca;background:#fffafa}.signal-grid span{display:block;color:#667085;font-size:.66rem;font-weight:760;text-transform:uppercase;letter-spacing:.035em}.signal-grid strong{display:block;color:#101828;font-size:1.2rem;margin:5px 0}.signal-grid small{color:#667085;line-height:1.45}.week-card{padding:20px;border:1px solid #e4e7ec;border-radius:12px;background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.03)}.week-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.week-head h3{margin:3px 0;font-size:1rem}.week-head a{color:#175cd3;font-weight:700;text-decoration:none;font-size:.74rem}.lesson-list article{display:grid;grid-template-columns:46px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid #eaecf0}.date{width:44px;height:44px;border-radius:8px;background:#f2f4f7;color:#344054;display:grid;place-items:center;align-content:center}.date strong{line-height:1}.date span{font-size:.58rem;text-transform:uppercase;color:#667085}.lesson-copy{display:flex;flex-direction:column}.lesson-copy strong{color:#101828;font-size:.86rem}.lesson-copy small{color:#667085;margin-top:3px}.row-actions{display:flex;gap:1px}.empty-next,.loading-card{padding:28px;border:1px dashed #d0d5dd;border-radius:12px;background:#fff;margin-bottom:14px}.empty-next{display:flex;align-items:flex-end;justify-content:space-between;gap:24px}.empty-next h2{margin:6px 0 5px;font-size:1.3rem}.empty-next p{margin:0;color:#667085}.empty-row{padding:18px 4px;color:#667085}@media(max-width:900px){.next-panel{grid-template-columns:1fr}.schedule-tools{border-left:0;border-top:1px solid #eaecf0}.signal-grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.signal-grid{grid-template-columns:1fr}.lesson-list article{grid-template-columns:46px 1fr}.row-actions{grid-column:2}.head-actions{width:100%}.empty-next{align-items:flex-start;flex-direction:column}.next-actions{width:100%}.next-actions a{flex:1}}
   `]
 })
 export class TodayComponent implements OnInit{
   private readonly api=inject(ApiService);readonly stats=signal<Analytics|null>(null);
   ngOnInit():void{this.api.get<Analytics>('/api/v1/analytics').subscribe(value=>this.stats.set(value));}
   nextLesson(stats:Analytics):LessonLike|null{return (stats.nextLessons?.[0] as LessonLike|undefined)??null;}
-  healthLabel(s:Analytics):string{return s.missedLessons>2?'Needs recovery':s.completionRate>=70?'On track':s.completionRate>=40?'Building momentum':'Getting started';}
-  healthCopy(s:Analytics):string{return s.missedLessons>2?'Reschedule missed work before adding more.':s.scheduledLessons?'Your upcoming schedule is protecting momentum.':'Add a scheduled lesson to turn intent into a commitment.';}
+  healthLabel(s:Analytics):string{return s.missedLessons>2?'Needs attention':s.completionRate>=70?'On track':s.completionRate>=40?'Building momentum':'Getting started';}
+  healthCopy(s:Analytics):string{return s.missedLessons>2?'Reschedule missed work before adding more.':s.scheduledLessons?'Your upcoming schedule is protecting momentum.':'Schedule one lesson to turn intent into a commitment.';}
   formatFull(value?:string):string{if(!value)return'Not scheduled';return new Intl.DateTimeFormat(undefined,{weekday:'long',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(value));}
   day(value?:string):string{return value?new Intl.DateTimeFormat(undefined,{day:'2-digit'}).format(new Date(value)):'--';}
   month(value?:string):string{return value?new Intl.DateTimeFormat(undefined,{month:'short'}).format(new Date(value)):'--';}
