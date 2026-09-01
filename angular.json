@@ -26,7 +26,8 @@
               "src/brand-logo.css",
               "src/theme-modes.css",
               "src/accessibility.css",
-              "src/business-ui.css"
+              "src/business-ui.css",
+              "src/product-redesign.css"
             ]
           },
           "configurations": {
