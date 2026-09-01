@@ -27,7 +27,8 @@
               "src/theme-modes.css",
               "src/accessibility.css",
               "src/business-ui.css",
-              "src/product-redesign.css"
+              "src/product-redesign.css",
+              "src/marketing-dark.css"
             ]
           },
           "configurations": {
