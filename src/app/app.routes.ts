@@ -19,6 +19,7 @@ export const routes: Routes = [
   { path: 'retention', canActivate: [authGuard], loadComponent: () => import('./features/retention/retention.component').then(m => m.RetentionComponent) },
   { path: 'social', canActivate: [authGuard], loadComponent: () => import('./features/social/social.component').then(m => m.SocialComponent) },
   { path: 'social/groups/:groupId', canActivate: [authGuard], loadComponent: () => import('./features/social/social-group.component').then(m => m.SocialGroupComponent) },
+  { path: 'career', canActivate: [authGuard], loadComponent: () => import('./features/career/career.component').then(m => m.CareerComponent) },
   { path: 'achievements', canActivate: [authGuard], loadComponent: () => import('./features/achievements/achievements.component').then(m => m.AchievementsComponent) },
   { path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
   { path: 'progress', canActivate: [authGuard], loadComponent: () => import('./features/progress/progress.component').then(m => m.ProgressComponent) },
