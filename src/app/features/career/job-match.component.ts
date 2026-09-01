@@ -8,6 +8,7 @@ type Level='FOUNDATION'|'WORKING'|'STRONG';
 type Requirement={name:string;targetLevel:Level;importance:'REQUIRED'|'PREFERRED';currentLevel:Level|null;met:boolean;evidence:Array<{title:string;type:string;url?:string;masteryScore?:number}>};
 type Analysis={id:string;title:string;company?:string;createdAt:string;match:{score:number;matched:Requirement[];gaps:Requirement[];requirements:Requirement[]};talkingPoints:string[];interviewQuestions:string[];learningPlanBrief:string};
 type History={id:string;title:string;company?:string;requirementCount:number;createdAt:string};
+type AnalyseRequest={title:string;company?:string;jobDescription:string};
 
 @Component({
   standalone:true,
@@ -41,10 +42,10 @@ export class JobMatchComponent implements OnInit{
   readonly result=signal<Analysis|null>(null);readonly history=signal<History[]>([]);readonly error=signal('');readonly busy=signal(false);readonly copied=signal(false);
   title='';company='';jobDescription='';
   ngOnInit(){this.refreshHistory();}
-  analyse(){this.error.set('');this.busy.set(true);this.api.post<Analysis>('/api/v1/career/jobs/analyse',{title:this.title.trim(),company:this.company.trim()||undefined,jobDescription:this.jobDescription.trim()}).subscribe({next:value=>{this.result.set(value);this.busy.set(false);this.refreshHistory();},error:e=>{this.error.set(e.error?.message??'Could not analyse this job.');this.busy.set(false);}});}
+  analyse(){this.error.set('');this.busy.set(true);const body:AnalyseRequest={title:this.title.trim(),jobDescription:this.jobDescription.trim(),...(this.company.trim()?{company:this.company.trim()}:{})};this.api.post<AnalyseRequest,Analysis>('/api/v1/career/jobs/analyse',body).subscribe({next:value=>{this.result.set(value);this.busy.set(false);this.refreshHistory();},error:e=>{this.error.set(e.error?.message??'Could not analyse this job.');this.busy.set(false);}});}
   load(id:string){this.error.set('');this.api.get<Analysis>(`/api/v1/career/jobs/${id}`).subscribe({next:value=>this.result.set(value),error:e=>this.error.set(e.error?.message??'Could not load analysis.')});}
   refreshHistory(){this.api.get<History[]>('/api/v1/career/jobs').subscribe({next:value=>this.history.set(value),error:()=>undefined});}
-  copyBrief(value:string){navigator.clipboard?.writeText(value).then(()=>{this.copied.set(true);setTimeout(()=>this.copied.set(false),1600);}).catch(()=>undefined);}
+  copyBrief(value:string){if(!navigator.clipboard)return;navigator.clipboard.writeText(value).then(()=>{this.copied.set(true);setTimeout(()=>this.copied.set(false),1600);}).catch(()=>undefined);}
   date(value:string){return new Intl.DateTimeFormat(undefined,{day:'numeric',month:'short'}).format(new Date(value));}
   scoreBand(score:number){return score>=75?'strong':score<50?'weak':'developing';}
 }
