@@ -15,14 +15,14 @@ import { AuthService } from '../../core/auth/auth.service';
     <section class="auth-layout page-enter">
       <div class="auth-context">
         <span class="eyebrow">Welcome back</span>
-        <h1>Continue building measurable learning momentum.</h1>
-        <p>Return to your learning paths, scheduled sessions, board and progress analytics from one focused workspace.</p>
-        <div class="auth-points"><span>Structured learning paths</span><span>Scheduled accountability</span><span>Progress analytics</span></div>
+        <h1>Pick up where your learning left off.</h1>
+        <p>Return to today's focus session, reviews and progress without rebuilding the context every time you sign in.</p>
+        <div class="auth-points"><span>Know what matters today</span><span>Track real focused study time</span><span>Turn mastery into useful evidence</span></div>
       </div>
       <mat-card class="auth-card">
         <span class="mini-label">Secure access</span>
         <h2>Sign in to LearnFlow</h2>
-        <p class="muted">Use your account details to open your learning workspace.</p>
+        <p class="muted">Enter your details to continue to your workspace.</p>
         <form [formGroup]="form" (ngSubmit)="submit()">
           <mat-form-field appearance="outline"><mat-label>Email</mat-label><input matInput type="email" formControlName="email" autocomplete="email"></mat-form-field>
           <mat-form-field appearance="outline">
@@ -59,7 +59,7 @@ export class LoginComponent {
     if (this.form.invalid) return;
     this.loading.set(true); this.error.set('');
     this.auth.login(this.form.getRawValue()).subscribe({
-      next: () => void this.router.navigateByUrl('/dashboard'),
+      next: () => void this.router.navigateByUrl('/today'),
       error: err => { this.error.set(err?.error?.message ?? 'Unable to sign in'); this.loading.set(false); }
     });
   }
