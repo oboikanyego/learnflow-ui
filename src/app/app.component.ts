@@ -9,7 +9,29 @@ type NavGroup = 'workspace' | 'planning' | 'activity' | 'account' | 'admin';
 @Component({
   selector: 'app-root', standalone: true, imports: [RouterLink, RouterLinkActive, RouterOutlet], styleUrl: './app.component.css',
   template: `
-    @if (loading.isLoading()) {<div class="global-api-loader" role="progressbar" aria-label="Loading application data"><span></span></div>}
+    @if (loading.isLoading()) {
+      <div class="global-api-loader" role="status" aria-live="polite" aria-label="LearnFlow is processing your request">
+        <div class="learning-loader-card">
+          <div class="learning-loader-visual" aria-hidden="true">
+            <span class="learning-orbit learning-orbit-one"></span>
+            <span class="learning-orbit learning-orbit-two"></span>
+            <span class="learning-orbit learning-orbit-three"></span>
+            <div class="learning-logo-shell"><img src="/learnflow-logo.svg" alt=""></div>
+          </div>
+          <div class="learning-loader-copy">
+            <span class="learning-loader-eyebrow">LearnFlow</span>
+            <strong>Learning in motion…</strong>
+            <div class="learning-loader-messages" aria-hidden="true">
+              <span>Connecting the next step</span>
+              <span>Organising your learning flow</span>
+              <span>Getting everything ready</span>
+            </div>
+          </div>
+          <div class="learning-loader-track" aria-hidden="true"><span></span></div>
+          <small>Please wait while this action completes.</small>
+        </div>
+      </div>
+    }
     @if (auth.isAuthenticated()) {
       <div class="jira-workspace"><aside class="workspace-sidebar">
         <a routerLink="/dashboard" class="sidebar-brand" aria-label="LearnFlow dashboard"><img class="brand-logo brand-logo-sidebar" src="/learnflow-logo.svg" alt="" aria-hidden="true"><span><strong>LearnFlow</strong><small>Learning workspace</small></span></a>
