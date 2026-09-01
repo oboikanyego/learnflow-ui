@@ -7,7 +7,7 @@ import { NotificationCenterService } from './core/notifications/notification-cen
 type NavGroup = 'workspace' | 'planning' | 'activity' | 'account' | 'admin';
 
 @Component({
-  selector: 'app-root', standalone: true, imports: [RouterLink, RouterLinkActive, RouterOutlet], styleUrl: './app.component.css',
+  selector: 'app-root', standalone: true, imports: [RouterLink, RouterLinkActive, RouterOutlet], styleUrls: ['./app.component.css','./loader.component.css'],
   template: `
     @if (loading.isLoading()) {
       <div class="global-api-loader" role="status" aria-live="polite" aria-label="LearnFlow is processing your request">
