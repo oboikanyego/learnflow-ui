@@ -198,13 +198,12 @@ export class VideoFinderComponent implements OnInit {
     if (lessonId) {
       this.api.get<Lesson>(`/api/v1/lessons/${lessonId}`).subscribe({
         next: lesson => this.selectLesson({
-          id: lesson.id,
+          id: lesson._id,
           title: lesson.title,
           description: lesson.description ?? '',
           status: lesson.status,
           scheduledAt: lesson.scheduledAt,
-          durationMinutes: lesson.durationMinutes,
-          learningPathId: lesson.learningPathId
+          durationMinutes: lesson.durationMinutes
         }),
         error: () => undefined
       });
