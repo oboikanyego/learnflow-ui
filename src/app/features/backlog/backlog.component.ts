@@ -35,17 +35,17 @@ type BacklogTreePhase = {
     <section class="page-enter backlog-page">
       <div class="page-head backlog-head">
         <div>
-          <span class="eyebrow">Learning / Backlog</span>
+          <span class="eyebrow">Learning / Plan ahead</span>
           <h1>Backlog</h1>
-          <p class="muted">See the full learning plan without turning your day-to-day board into a long scrolling page.</p>
+          <p class="muted">Browse what comes later and inspect the full lesson plan without crowding Today or the active Board.</p>
         </div>
-        <a class="board-link" routerLink="/board">← Back to board</a>
+        <div class="backlog-head-links"><a class="board-link" routerLink="/learning-paths">Curriculum</a><a class="board-link" routerLink="/board">Active board →</a></div>
       </div>
 
       <section class="backlog-summary" aria-label="Backlog summary">
-        <article><span>Upcoming</span><strong>{{ upcomingItems().length }}</strong><small>Active lessons in this path</small></article>
+        <article><span>Upcoming</span><strong>{{ upcomingItems().length }}</strong><small>Lessons still ahead in this path</small></article>
         <article><span>Scheduled</span><strong>{{ countStatus('SCHEDULED') }}</strong><small>Already placed on your calendar</small></article>
-        <article><span>Unscheduled</span><strong>{{ countStatus('BACKLOG') }}</strong><small>Ready to plan when needed</small></article>
+        <article><span>Unscheduled</span><strong>{{ countStatus('BACKLOG') }}</strong><small>Future work waiting to be planned</small></article>
       </section>
 
       <section class="backlog-toolbar">
