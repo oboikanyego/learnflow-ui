@@ -14,9 +14,9 @@ import { ActionDialogComponent, ConfirmDialogComponent } from '../../shared/acti
     <section class="page-enter">
       <div class="page-head">
         <div>
-          <span class="eyebrow">Learning portfolio</span>
+          <span class="eyebrow">Learning / Curriculum</span>
           <h1>Learning paths</h1>
-          <p class="muted">Create, organize and manage long-term learning outcomes, including plans you imported.</p>
+          <p class="muted">Review the overall curriculum, structure and progress for each long-term learning outcome.</p>
         </div>
         <button mat-flat-button class="primary-cta" (click)="openCreateDialog()">New learning path</button>
       </div>
@@ -27,12 +27,13 @@ import { ActionDialogComponent, ConfirmDialogComponent } from '../../shared/acti
             <mat-card-content>
               <div class="page-head" style="margin-bottom:12px">
                 <span class="status-pill status-active">{{ path.status }}</span>
-                <span class="mini-label">Learning path</span>
+                <span class="mini-label">Curriculum</span>
               </div>
               <h3>{{ path.title }}</h3>
               <p class="muted">{{ path.description || 'No description added yet.' }}</p>
-              <div class="lesson-actions" style="margin-top:18px">
-                <a mat-flat-button [routerLink]="['/learning-paths', path._id]">Open workspace</a>
+              <div class="lesson-actions" style="margin-top:18px;flex-wrap:wrap">
+                <a mat-flat-button [routerLink]="['/learning-paths', path._id]">View curriculum</a>
+                <a mat-stroked-button routerLink="/backlog" [queryParams]="{ path: path._id }">Open backlog</a>
                 <button mat-button class="danger-action" (click)="confirmRemove(path)">Delete plan</button>
               </div>
             </mat-card-content>
@@ -41,7 +42,7 @@ import { ActionDialogComponent, ConfirmDialogComponent } from '../../shared/acti
           <div class="module">
             <span class="eyebrow">Start here</span>
             <h3>No learning paths yet</h3>
-            <p class="muted">Create your first learning path or import a structured plan from Excel.</p>
+            <p class="muted">Create your first curriculum or import a structured plan from Excel.</p>
             <button mat-flat-button class="primary-cta" (click)="openCreateDialog()">Create first path</button>
           </div>
         }
@@ -67,7 +68,7 @@ export class LearningPathsComponent implements OnInit {
       data: {
         eyebrow: 'New learning path',
         title: 'Create a learning path',
-        description: 'Define the outcome you want to manage. You can build phases and lessons after creation.',
+        description: 'Define the long-term outcome. You can build the curriculum with phases, modules and lessons after creation.',
         submitLabel: 'Create path',
         fields: [
           { key: 'title', label: 'Path title', type: 'text', required: true },
