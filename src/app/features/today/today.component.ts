@@ -12,18 +12,18 @@ interface LessonLike { _id:string; title:string; scheduledAt?:string; durationMi
   template:`
     <section class="today page-enter">
       <div class="page-head">
-        <div><span class="eyebrow">Today</span><h1>Keep learning moving.</h1><p class="muted">Start with the next session. Use the rest of the page only when you need it.</p></div>
-        <div class="head-actions"><a mat-stroked-button routerLink="/study-history">Study history</a><a mat-stroked-button routerLink="/goals">Goals</a></div>
+        <div><span class="eyebrow">Today / Next action</span><h1>What should I do now?</h1><p class="muted">Start with the next session. Keep planning and future work out of this view unless you need it.</p></div>
+        <div class="head-actions"><a mat-stroked-button routerLink="/board">Active board</a><a mat-stroked-button routerLink="/backlog">Backlog</a></div>
       </div>
 
       @if(stats();as s){
         @if(nextLesson(s);as lesson){
           <section class="next-panel">
             <div class="next-main">
-              <span class="next-label">Next session</span>
+              <span class="next-label">Do this next</span>
               <h2>{{lesson.title}}</h2>
               <p class="next-meta">{{formatFull(lesson.scheduledAt)}} <span>•</span> {{lesson.durationMinutes}} minutes</p>
-              <div class="next-actions"><a mat-flat-button [routerLink]="['/focus',lesson._id]">Start session</a><a mat-stroked-button routerLink="/board">View board</a></div>
+              <div class="next-actions"><a mat-flat-button [routerLink]="['/focus',lesson._id]">Start session</a><a mat-stroked-button routerLink="/board">View active work</a></div>
             </div>
             <aside class="schedule-tools">
               <span class="schedule-label">Schedule tools</span>
@@ -33,22 +33,22 @@ interface LessonLike { _id:string; title:string; scheduledAt?:string; durationMi
             </aside>
           </section>
         } @else {
-          <section class="empty-next"><div><span class="next-label">Nothing scheduled</span><h2>Your learning calendar is clear.</h2><p>Choose an existing lesson from the board or create a realistic plan for the week.</p></div><div class="next-actions"><a mat-flat-button routerLink="/ai-planner">Create plan</a><a mat-stroked-button routerLink="/board">Open board</a></div></section>
+          <section class="empty-next"><div><span class="next-label">Nothing scheduled</span><h2>Your learning calendar is clear.</h2><p>Choose an upcoming lesson from Backlog and schedule only what you realistically intend to do next.</p></div><div class="next-actions"><a mat-flat-button routerLink="/backlog">Open backlog</a><a mat-stroked-button routerLink="/ai-planner">Create plan</a></div></section>
         }
 
         <section class="signal-grid" aria-label="Learning summary">
           <article><span>Learning health</span><strong>{{healthLabel(s)}}</strong><small>{{healthCopy(s)}}</small></article>
           <article><span>Focus this week</span><strong>{{s.focusMinutesThisWeek ?? 0}} min</strong><small>{{s.sessionsCompleted ?? 0}} completed sessions</small></article>
-          <article [class.alert]="s.missedLessons>0"><span>Needs rescheduling</span><strong>{{s.missedLessons}}</strong><small>{{s.missedLessons ? 'Missed lessons are waiting for a new date.' : 'Nothing is overdue.'}}</small></article>
+          <article [class.alert]="s.missedLessons>0"><span>Needs attention</span><strong>{{s.missedLessons}}</strong><small>{{s.missedLessons ? 'Missed lessons are waiting on the active board.' : 'Nothing needs recovery.'}}</small></article>
           <article><span>Current streak</span><strong>{{s.currentStreakDays}} days</strong><small>{{s.currentStreakDays ? 'Keep the next commitment realistic.' : 'Complete one lesson to start again.'}}</small></article>
         </section>
 
         <section class="week-card">
-          <div class="week-head"><div><span class="mini-label">Schedule</span><h3>Coming up</h3></div><a routerLink="/board">Manage schedule</a></div>
+          <div class="week-head"><div><span class="mini-label">After the next session</span><h3>Coming up soon</h3></div><a routerLink="/backlog">See full backlog</a></div>
           <div class="lesson-list">
-            @for(lesson of s.nextLessons;track lesson._id){
+            @for(lesson of comingUp(s);track lesson._id){
               <article><div class="date"><strong>{{day(lesson.scheduledAt)}}</strong><span>{{month(lesson.scheduledAt)}}</span></div><div class="lesson-copy"><strong>{{lesson.title}}</strong><small>{{formatFull(lesson.scheduledAt)}} · {{lesson.durationMinutes}} min</small></div><div class="row-actions"><a mat-button [routerLink]="['/focus',lesson._id]">Start</a><button mat-button (click)="downloadIcs(lesson)">Calendar</button></div></article>
-            } @empty { <div class="empty-row">No upcoming sessions. Add one from your board when you are ready.</div> }
+            } @empty { <div class="empty-row">No additional sessions are scheduled. Use Backlog when you are ready to plan more.</div> }
           </div>
         </section>
       } @else { <div class="loading-card">Loading your day…</div> }
@@ -62,8 +62,9 @@ export class TodayComponent implements OnInit{
   private readonly api=inject(ApiService);readonly stats=signal<Analytics|null>(null);
   ngOnInit():void{this.api.get<Analytics>('/api/v1/analytics').subscribe(value=>this.stats.set(value));}
   nextLesson(stats:Analytics):LessonLike|null{return (stats.nextLessons?.[0] as LessonLike|undefined)??null;}
+  comingUp(stats:Analytics):LessonLike[]{return (stats.nextLessons?.slice(1,4) as LessonLike[]|undefined)??[];}
   healthLabel(s:Analytics):string{return s.missedLessons>2?'Needs attention':s.completionRate>=70?'On track':s.completionRate>=40?'Building momentum':'Getting started';}
-  healthCopy(s:Analytics):string{return s.missedLessons>2?'Reschedule missed work before adding more.':s.scheduledLessons?'Your upcoming schedule is protecting momentum.':'Schedule one lesson to turn intent into a commitment.';}
+  healthCopy(s:Analytics):string{return s.missedLessons>2?'Recover missed work before scheduling more.':s.scheduledLessons?'Your near-term schedule is protecting momentum.':'Schedule one lesson from Backlog to create the next commitment.';}
   formatFull(value?:string):string{if(!value)return'Not scheduled';return new Intl.DateTimeFormat(undefined,{weekday:'long',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(value));}
   day(value?:string):string{return value?new Intl.DateTimeFormat(undefined,{day:'2-digit'}).format(new Date(value)):'--';}
   month(value?:string):string{return value?new Intl.DateTimeFormat(undefined,{month:'short'}).format(new Date(value)):'--';}
