@@ -28,7 +28,8 @@
               "src/accessibility.css",
               "src/business-ui.css",
               "src/product-redesign.css",
-              "src/marketing-dark.css"
+              "src/marketing-dark.css",
+              "src/dropdown-theme.css"
             ]
           },
           "configurations": {
