@@ -18,7 +18,8 @@ export interface ActionDialogField {
   required?: boolean;
   min?: number;
   hint?: string;
-  options?: Array<{ label: string; value: string | number }>;
+  placeholder?: string;
+  options?: Array<{ label?: string; value: string | number }>;
 }
 
 export interface ActionDialogData {
@@ -99,8 +100,13 @@ export interface ActionDialogData {
               @if (field.type === 'textarea') {
                 <textarea matInput rows="4" [(ngModel)]="values[field.key]" [required]="field.required ?? false"></textarea>
               } @else if (field.type === 'select') {
-                <mat-select [(ngModel)]="values[field.key]" [required]="field.required ?? false">
-                  @for (option of field.options ?? []; track option.value) { <mat-option [value]="option.value">{{ option.label }}</mat-option> }
+                <mat-select
+                  [(ngModel)]="values[field.key]"
+                  [required]="field.required ?? false"
+                  [placeholder]="field.placeholder ?? selectPlaceholder(field)">
+                  @for (option of field.options ?? []; track option.value) {
+                    <mat-option [value]="option.value">{{ optionLabel(option) }}</mat-option>
+                  }
                 </mat-select>
               } @else {
                 <input matInput [type]="field.type" [(ngModel)]="values[field.key]" [required]="field.required ?? false" [min]="field.min ?? null">
@@ -144,6 +150,16 @@ export class ActionDialogComponent {
     }
   }
 
+  selectPlaceholder(field: ActionDialogField): string {
+    return `Select ${field.label.toLowerCase()}`;
+  }
+
+  optionLabel(option: { label?: string; value: string | number }): string {
+    const raw = String(option.label ?? option.value).trim();
+    if (!raw) return '';
+    return this.looksTechnical(raw) ? this.humanize(raw) : raw;
+  }
+
   syncDate(key: string): void {
     const date = this.dateValues[key];
     this.values[key] = date ? this.toLocalDate(date) : '';
@@ -165,6 +181,25 @@ export class ActionDialogComponent {
       if (field.type === 'datetime-local') this.syncDateTime(field.key);
     }
     if (this.isValid()) this.dialogRef.close(this.values);
+  }
+
+  private looksTechnical(value: string): boolean {
+    return /[_-]/.test(value) || /^[A-Z0-9 ]+$/.test(value);
+  }
+
+  private humanize(value: string): string {
+    const acronyms = new Set(['AI', 'API', 'ID', 'URL', 'UI', 'UX', 'CSV', 'XLSX', 'JWT', 'SMS']);
+    return value
+      .replace(/[_-]+/g, ' ')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map(word => {
+        const upper = word.toUpperCase();
+        if (acronyms.has(upper)) return upper;
+        return `${word.charAt(0).toUpperCase()}${word.slice(1).toLowerCase()}`;
+      })
+      .join(' ');
   }
 
   private parseDateValue(value: string | number): Date | null {
