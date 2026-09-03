@@ -9,7 +9,8 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   const loading = inject(LoadingService);
   const backgroundRequest =
     req.url.includes('/api/v1/notifications') ||
-    req.url.includes('/api/v1/ai/plan-jobs');
+    req.url.includes('/api/v1/ai/plan-jobs') ||
+    req.url.includes('/api/v1/ai/coach');
   const blockingRequest = BLOCKING_METHODS.has(req.method.toUpperCase()) && !backgroundRequest;
 
   if (!blockingRequest) return next(req);
