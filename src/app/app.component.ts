@@ -7,10 +7,10 @@ import { NotificationCenterService } from './core/notifications/notification-cen
 type NavGroup = 'workspace' | 'learning' | 'career' | 'tools' | 'account' | 'admin';
 
 const TOUR_STEPS = [
-  { kicker: 'Start here', title: 'Today is your home base', copy: 'Use Today to see the next session, missed work, reviews and the one thing that deserves your attention now.', link: '/today', action: 'Open Today' },
-  { kicker: 'Build a plan', title: 'Turn a goal into scheduled work', copy: 'Create a goal, import a spreadsheet, or use the planner. LearnFlow is designed to turn intention into lessons you can actually execute.', link: '/goals', action: 'View goals' },
-  { kicker: 'Do the work', title: 'Use Focus Mode for real study time', copy: 'Start a scheduled lesson from Today. Focus Mode tracks real effort, notes, pauses and reflection instead of assuming planned time equals studied time.', link: '/study-history', action: 'See study history' },
-  { kicker: 'Improve over time', title: 'Review, prove mastery and build evidence', copy: 'Retention, checkpoints and career evidence help you decide what to revisit, what you truly know and what supports your target role.', link: '/help', action: 'Open full guide' }
+  { kicker: 'Start here', title: 'Today is your home base', copy: 'Use Today for the single next action and only the few sessions immediately after it.', link: '/today', action: 'Open Today' },
+  { kicker: 'Plan ahead', title: 'Keep future work in Backlog', copy: 'Use Backlog to browse the full upcoming plan without crowding the active Board or your Today view.', link: '/backlog', action: 'Open Backlog' },
+  { kicker: 'Do the work', title: 'Board is for active work', copy: 'The Board now focuses on scheduled, in-progress and missed lessons. Move completed work out of the active workflow as you finish it.', link: '/board', action: 'Open Board' },
+  { kicker: 'See the big picture', title: 'Learning paths hold the curriculum', copy: 'Use Learning Paths to inspect phases, modules, lesson structure and overall curriculum progress.', link: '/learning-paths', action: 'View Learning Paths' }
 ] as const;
 
 @Component({
@@ -41,6 +41,7 @@ const TOUR_STEPS = [
                 <a routerLink="/dashboard" routerLinkActive="active"><span class="nav-icon">▦</span><span>Dashboard</span></a>
                 <a routerLink="/goals" routerLinkActive="active"><span class="nav-icon">◎</span><span>Goals</span></a>
                 <a routerLink="/board" routerLinkActive="active"><span class="nav-icon">▤</span><span>Board</span></a>
+                <a routerLink="/backlog" routerLinkActive="active"><span class="nav-icon">☷</span><span>Backlog</span></a>
                 <a routerLink="/learning-paths" routerLinkActive="active"><span class="nav-icon">◇</span><span>Learning paths</span></a>
                 <a routerLink="/progress" routerLinkActive="active"><span class="nav-icon">◒</span><span>Progress</span></a>
               </div>}
@@ -128,8 +129,9 @@ const TOUR_STEPS = [
           <div class="mobile-more-grid">
             <a routerLink="/dashboard" (click)="mobileMoreOpen.set(false)"><span>▦</span><strong>Dashboard</strong><small>Overview and metrics</small></a>
             <a routerLink="/goals" (click)="mobileMoreOpen.set(false)"><span>◎</span><strong>Goals</strong><small>Targets and commitments</small></a>
-            <a routerLink="/learning-paths" (click)="mobileMoreOpen.set(false)"><span>◇</span><strong>Learning paths</strong><small>Your structured plans</small></a>
-            <a routerLink="/board" (click)="mobileMoreOpen.set(false)"><span>▤</span><strong>Board</strong><small>Move lessons forward</small></a>
+            <a routerLink="/learning-paths" (click)="mobileMoreOpen.set(false)"><span>◇</span><strong>Learning paths</strong><small>Curriculum and progress</small></a>
+            <a routerLink="/board" (click)="mobileMoreOpen.set(false)"><span>▤</span><strong>Board</strong><small>Active learning work</small></a>
+            <a routerLink="/backlog" (click)="mobileMoreOpen.set(false)"><span>☷</span><strong>Backlog</strong><small>Upcoming and full plan</small></a>
             <a routerLink="/mastery" (click)="mobileMoreOpen.set(false)"><span>✓</span><strong>Mastery</strong><small>Checkpoint results</small></a>
             <a routerLink="/study-history" (click)="mobileMoreOpen.set(false)"><span>◷</span><strong>Study history</strong><small>Actual focus time</small></a>
             <a routerLink="/ai-coach" (click)="mobileMoreOpen.set(false)"><span>✦</span><strong>Coach</strong><small>Learning guidance</small></a>
