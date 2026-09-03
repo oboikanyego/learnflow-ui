@@ -26,6 +26,7 @@ export interface AuthUser {
   email: string;
   role: string;
   timezone: string;
+  profileImageUrl?: string | null;
   entitlement?: Entitlement;
   notificationPreferences?: NotificationPreferences;
 }
@@ -68,6 +69,22 @@ export class AuthService {
     return this.http.patch<AuthUser>(`${environment.apiUrl}/api/v1/auth/profile`, input).pipe(tap(user => {
       const current = this.userState();
       this.userState.set(current ? { ...current, ...user } : user);
+    }));
+  }
+
+  uploadProfileImage(file: File) {
+    const body = new FormData();
+    body.append('file', file);
+    return this.http.post<{ profileImageUrl: string; message: string }>(`${environment.apiUrl}/api/v1/auth/profile-image`, body).pipe(tap(response => {
+      const current = this.userState();
+      if (current) this.userState.set({ ...current, profileImageUrl: response.profileImageUrl });
+    }));
+  }
+
+  removeProfileImage() {
+    return this.http.delete<{ profileImageUrl: null; message: string }>(`${environment.apiUrl}/api/v1/auth/profile-image`).pipe(tap(() => {
+      const current = this.userState();
+      if (current) this.userState.set({ ...current, profileImageUrl: null });
     }));
   }
 
