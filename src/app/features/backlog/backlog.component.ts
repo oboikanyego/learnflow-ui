@@ -5,7 +5,7 @@ import { ApiService } from '../../core/services/api.service';
 import { LearningPath, Lesson, LessonStatus, Phase } from '../../models/learning.models';
 
 type BacklogView = 'tree' | 'list';
-type BacklogStatusFilter = 'UPCOMING' | 'BACKLOG' | 'SCHEDULED' | 'IN_PROGRESS' | 'MISSED';
+type BacklogStatusFilter = 'UPCOMING' | LessonStatus;
 
 type BacklogItem = {
   lesson: Lesson;
@@ -65,6 +65,8 @@ type BacklogTreePhase = {
               <option value="SCHEDULED">Scheduled</option>
               <option value="IN_PROGRESS">In progress</option>
               <option value="MISSED">Missed</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="SKIPPED">Skipped</option>
             </select>
           </label>
           <label class="search-field">
@@ -107,7 +109,7 @@ type BacklogTreePhase = {
               </div>
             </article>
           } @empty {
-            <div class="backlog-empty"><strong>No upcoming lessons match these filters.</strong><span>Try another status, search term or learning path.</span></div>
+            <div class="backlog-empty"><strong>No lessons match these filters.</strong><span>Try another status, search term or learning path.</span></div>
           }
         </section>
       } @else {
@@ -121,7 +123,7 @@ type BacklogTreePhase = {
               <span class="schedule-text">{{ scheduleLabel(item.lesson) }}</span>
             </article>
           } @empty {
-            <div class="backlog-empty"><strong>No upcoming lessons match these filters.</strong><span>Try another status, search term or learning path.</span></div>
+            <div class="backlog-empty"><strong>No lessons match these filters.</strong><span>Try another status, search term or learning path.</span></div>
           }
         </section>
       }
@@ -173,12 +175,15 @@ export class BacklogComponent implements OnInit {
 
   filteredItems(): BacklogItem[] {
     const query = this.searchQuery.trim().toLowerCase();
-    return this.upcomingItems().filter(item => {
-      const statusMatches = this.statusFilter === 'UPCOMING' || item.lesson.status === this.statusFilter;
-      const searchMatches = !query || [item.lesson.title, item.lesson.description, item.phaseTitle, item.moduleTitle]
+    const statusItems = this.statusFilter === 'UPCOMING'
+      ? this.upcomingItems()
+      : this.flattenItems().filter(item => item.lesson.status === this.statusFilter);
+
+    return statusItems.filter(item => {
+      if (!query) return true;
+      return [item.lesson.title, item.lesson.description, item.phaseTitle, item.moduleTitle]
         .filter(Boolean)
         .some(value => String(value).toLowerCase().includes(query));
-      return statusMatches && searchMatches;
     });
   }
 
@@ -206,7 +211,7 @@ export class BacklogComponent implements OnInit {
   }
 
   countStatus(status: LessonStatus): number {
-    return this.upcomingItems().filter(item => item.lesson.status === status).length;
+    return this.flattenItems().filter(item => item.lesson.status === status).length;
   }
 
   totalPages(): number { return Math.max(1, Math.ceil(this.filteredItems().length / this.pageSize)); }
@@ -239,6 +244,6 @@ export class BacklogComponent implements OnInit {
   }
 
   private isBacklogFilter(value: string | null): value is BacklogStatusFilter {
-    return value !== null && ['UPCOMING', 'BACKLOG', 'SCHEDULED', 'IN_PROGRESS', 'MISSED'].includes(value);
+    return value !== null && ['UPCOMING', 'BACKLOG', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'MISSED', 'SKIPPED'].includes(value);
   }
 }
