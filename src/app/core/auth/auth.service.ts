@@ -26,6 +26,7 @@ export interface AuthUser {
   email: string;
   role: string;
   timezone: string;
+  dateOfBirth?: string | null;
   profileImageUrl?: string | null;
   entitlement?: Entitlement;
   notificationPreferences?: NotificationPreferences;
@@ -45,7 +46,7 @@ export class AuthService {
 
   constructor(private readonly http: HttpClient) {}
 
-  register(input: { name: string; email: string; password: string; timezone: string }) {
+  register(input: { name: string; email: string; password: string; timezone: string; dateOfBirth: string }) {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/api/v1/auth/register`, input).pipe(tap(response => this.persist(response)));
   }
 
@@ -65,7 +66,7 @@ export class AuthService {
     return this.http.get<AuthUser>(`${environment.apiUrl}/api/v1/auth/me`).pipe(tap(user => this.userState.set(user)));
   }
 
-  updateProfile(input: { name: string; timezone: string }) {
+  updateProfile(input: { name: string; timezone: string; dateOfBirth?: string }) {
     return this.http.patch<AuthUser>(`${environment.apiUrl}/api/v1/auth/profile`, input).pipe(tap(user => {
       const current = this.userState();
       this.userState.set(current ? { ...current, ...user } : user);
