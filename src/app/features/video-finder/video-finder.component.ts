@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -122,7 +122,7 @@ interface VideoSearchResponse {
               <section class="player-card">
                 <div class="player-frame">
                   <iframe
-                    [src]="embedUrl(video.videoId)"
+                    [src]="selectedEmbedUrl()"
                     [title]="video.title"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowfullscreen>
@@ -185,6 +185,12 @@ export class VideoFinderComponent implements OnInit {
   readonly selectedLesson = signal<VideoLesson | null>(null);
   readonly videos = signal<LessonVideo[]>([]);
   readonly selectedVideo = signal<LessonVideo | null>(null);
+  readonly selectedEmbedUrl = computed<SafeResourceUrl | null>(() => {
+    const video = this.selectedVideo();
+    return video
+      ? this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${encodeURIComponent(video.videoId)}?rel=0`)
+      : null;
+  });
   readonly searchMeta = signal<VideoSearchResponse | null>(null);
   readonly loadingLessons = signal(false);
   readonly searchingVideos = signal(false);
@@ -255,7 +261,6 @@ export class VideoFinderComponent implements OnInit {
   }
 
   play(video: LessonVideo): void { this.selectedVideo.set(video); }
-  embedUrl(videoId: string): SafeResourceUrl { return this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${encodeURIComponent(videoId)}?rel=0`); }
   statusLabel(value: string): string { return value.replaceAll('_', ' ').toLowerCase().replace(/(^|\s)\S/g, char => char.toUpperCase()); }
   providerLabel(provider: string | null): string { return provider ? `${provider.charAt(0).toUpperCase()}${provider.slice(1)} assisted` : 'AI assisted'; }
   truncate(value: string, length: number): string { const text = value.trim(); return text.length > length ? `${text.slice(0, length).trim()}…` : text; }
