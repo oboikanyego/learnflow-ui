@@ -32,6 +32,7 @@ export const routes: Routes = [
   { path: 'learning-paths', canActivate: [authGuard], loadComponent: () => import('./features/learning-paths/learning-paths.component').then(m => m.LearningPathsComponent) },
   { path: 'learning-paths/:id', canActivate: [authGuard], loadComponent: () => import('./features/learning-paths/learning-path-detail.component').then(m => m.LearningPathDetailComponent) },
   { path: 'board', canActivate: [authGuard], loadComponent: () => import('./features/board/board.component').then(m => m.BoardComponent) },
+  { path: 'backlog', canActivate: [authGuard], loadComponent: () => import('./features/backlog/backlog.component').then(m => m.BacklogComponent) },
   { path: 'import', canActivate: [authGuard], loadComponent: () => import('./features/import/import.component').then(m => m.ImportComponent) },
   { path: 'notifications', canActivate: [authGuard], loadComponent: () => import('./features/notifications/notifications.component').then(m => m.NotificationsComponent) },
   { path: 'profile', canActivate: [authGuard], loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent) },
