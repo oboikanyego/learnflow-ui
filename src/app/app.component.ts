@@ -102,7 +102,18 @@ const TOUR_STEPS = [
           </nav>
 
           <div class="sidebar-help"><button type="button" class="sidebar-help-button" (click)="startTour()"><span class="help-mark">?</span><span><strong>Need a hand?</strong><small>Take the 2-minute tour</small></span></button></div>
-          <div class="sidebar-footer"><button type="button" class="sidebar-account" (click)="logout()"><span class="account-avatar">{{ accountInitials() }}</span><span><strong>{{ auth.user()?.name || 'Account' }}</strong><small>{{ auth.user()?.entitlement?.plan || 'FREE' }} · Sign out</small></span><span>↗</span></button></div>
+          <div class="sidebar-footer">
+            <button type="button" class="sidebar-account" (click)="logout()">
+              <span class="account-avatar" style="overflow:hidden">
+                @if (auth.user()?.profileImageUrl) {
+                  <img [src]="auth.user()?.profileImageUrl ?? ''" [alt]="(auth.user()?.name || 'Account') + ' profile picture'" style="width:30px;height:30px;border-radius:50%;object-fit:cover;display:block">
+                } @else {
+                  {{ accountInitials() }}
+                }
+              </span>
+              <span><strong>{{ auth.user()?.name || 'Account' }}</strong><small>{{ auth.user()?.entitlement?.plan || 'FREE' }} · Sign out</small></span><span>↗</span>
+            </button>
+          </div>
         </aside>
 
         <div class="workspace-main">
