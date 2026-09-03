@@ -46,6 +46,10 @@ export class AuthService {
 
   constructor(private readonly http: HttpClient) {}
 
+  registrationPolicy() {
+    return this.http.get<{ minimumAge: number }>(`${environment.apiUrl}/api/v1/auth/registration-policy`);
+  }
+
   register(input: { name: string; email: string; password: string; timezone: string; dateOfBirth: string }) {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/api/v1/auth/register`, input).pipe(tap(response => this.persist(response)));
   }
