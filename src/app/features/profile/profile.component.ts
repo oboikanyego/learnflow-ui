@@ -6,6 +6,24 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../../core/auth/auth.service';
 
+type TimezoneOption = { value: string; label: string };
+
+const TIMEZONE_OPTIONS: TimezoneOption[] = [
+  { value: 'Africa/Johannesburg', label: 'Johannesburg, South Africa' },
+  { value: 'UTC', label: 'UTC · Coordinated Universal Time' },
+  { value: 'Europe/London', label: 'London, United Kingdom' },
+  { value: 'Europe/Paris', label: 'Paris, France' },
+  { value: 'America/New_York', label: 'New York, United States' },
+  { value: 'America/Chicago', label: 'Chicago, United States' },
+  { value: 'America/Denver', label: 'Denver, United States' },
+  { value: 'America/Los_Angeles', label: 'Los Angeles, United States' },
+  { value: 'Asia/Dubai', label: 'Dubai, United Arab Emirates' },
+  { value: 'Asia/Kolkata', label: 'Kolkata, India' },
+  { value: 'Asia/Singapore', label: 'Singapore' },
+  { value: 'Asia/Tokyo', label: 'Tokyo, Japan' },
+  { value: 'Australia/Sydney', label: 'Sydney, Australia' }
+];
+
 @Component({
   standalone:true,
   imports:[FormsModule,MatButtonModule,MatFormFieldModule,MatInputModule,MatSelectModule],
@@ -17,7 +35,13 @@ import { AuthService } from '../../core/auth/auth.service';
           <div class="card-head"><div><span class="mini-label">Profile</span><h3>Personal information</h3><p>Used across your workspace, reminders and account experience.</p></div><span class="avatar">{{initials()}}</span></div>
           <mat-form-field appearance="outline"><mat-label>Full name</mat-label><input matInput [(ngModel)]="name"></mat-form-field>
           <mat-form-field appearance="outline"><mat-label>Email</mat-label><input matInput [value]="email" disabled><mat-hint>Email changes will require verification in a later phase.</mat-hint></mat-form-field>
-          <mat-form-field appearance="outline"><mat-label>Timezone</mat-label><mat-select [(ngModel)]="timezone">@for(zone of timezones;track zone){<mat-option [value]="zone">{{zone}}</mat-option>}</mat-select><mat-hint>Controls lesson times, reminders and weekly activity reporting.</mat-hint></mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Timezone</mat-label>
+            <mat-select [(ngModel)]="timezone" placeholder="Select your timezone">
+              @for(zone of timezones;track zone.value){<mat-option [value]="zone.value">{{zone.label}}</mat-option>}
+            </mat-select>
+            <mat-hint>Controls lesson times, reminders and weekly activity reporting.</mat-hint>
+          </mat-form-field>
           @if(profileMessage()){<div class="feedback success">{{profileMessage()}}</div>}@if(profileError()){<div class="feedback error">{{profileError()}}</div>}
           <div class="actions"><button mat-flat-button class="primary-cta" [disabled]="savingProfile()" (click)="saveProfile()">{{savingProfile()?'Saving…':'Save profile'}}</button></div>
         </article>
@@ -48,10 +72,19 @@ import { AuthService } from '../../core/auth/auth.service';
 export class ProfileComponent implements OnInit{
   readonly auth=inject(AuthService);name='';email='';timezone='UTC';currentPassword='';newPassword='';confirmPassword='';showCurrent=false;showNew=false;
   readonly savingProfile=signal(false);readonly savingPassword=signal(false);readonly profileMessage=signal('');readonly profileError=signal('');readonly passwordMessage=signal('');readonly passwordError=signal('');
-  readonly timezones=['Africa/Johannesburg','UTC','Europe/London','Europe/Paris','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','Asia/Dubai','Asia/Kolkata','Asia/Singapore','Asia/Tokyo','Australia/Sydney'];
-  ngOnInit(){this.auth.loadProfile().subscribe({next:user=>{this.name=user.name;this.email=user.email;this.timezone=user.timezone;if(!this.timezones.includes(user.timezone))this.timezones.unshift(user.timezone);}});}
+  readonly timezones: TimezoneOption[] = [...TIMEZONE_OPTIONS];
+
+  ngOnInit(){this.auth.loadProfile().subscribe({next:user=>{this.name=user.name;this.email=user.email;this.timezone=user.timezone;if(!this.timezones.some(zone=>zone.value===user.timezone))this.timezones.unshift({value:user.timezone,label:this.friendlyTimezone(user.timezone)});}});}
   initials(){return(this.auth.user()?.name||this.name||'LF').split(/\s+/).slice(0,2).map(v=>v[0]??'').join('').toUpperCase();}
   saveProfile(){if(this.savingProfile())return;this.profileMessage.set('');this.profileError.set('');this.savingProfile.set(true);this.auth.updateProfile({name:this.name.trim(),timezone:this.timezone}).subscribe({next:()=>{this.profileMessage.set('Profile updated successfully.');this.savingProfile.set(false);},error:e=>{this.profileError.set(e.error?.message??'Unable to update profile.');this.savingProfile.set(false);}});}
   passwordValid(){return this.currentPassword.length>=8&&this.newPassword.length>=8&&this.newPassword===this.confirmPassword;}
   changePassword(){if(!this.passwordValid()||this.savingPassword())return;this.passwordMessage.set('');this.passwordError.set('');this.savingPassword.set(true);this.auth.changePassword({currentPassword:this.currentPassword,newPassword:this.newPassword}).subscribe({next:r=>{this.passwordMessage.set(r.message);this.currentPassword='';this.newPassword='';this.confirmPassword='';this.savingPassword.set(false);},error:e=>{this.passwordError.set(e.error?.message??'Unable to change password.');this.savingPassword.set(false);}});}
+
+  private friendlyTimezone(value:string):string{
+    if(value==='UTC')return'UTC · Coordinated Universal Time';
+    const parts=value.split('/');
+    const city=(parts.at(-1)??value).replaceAll('_',' ');
+    const region=parts.length>1?parts[0].replaceAll('_',' '):'';
+    return region?`${city} · ${region}`:city;
+  }
 }
