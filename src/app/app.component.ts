@@ -53,6 +53,7 @@ const TOUR_STEPS = [
                 <a routerLink="/retention" routerLinkActive="active"><span class="nav-icon">↻</span><span>Review queue</span></a>
                 <a routerLink="/mastery" routerLinkActive="active"><span class="nav-icon">✓</span><span>Mastery</span></a>
                 <a routerLink="/study-history" routerLinkActive="active"><span class="nav-icon">◷</span><span>Study history</span></a>
+                <a routerLink="/videos" routerLinkActive="active"><span class="nav-icon">▶</span><span>Video finder</span></a>
                 <a routerLink="/achievements" routerLinkActive="active"><span class="nav-icon">★</span><span>Achievements</span></a>
                 <a routerLink="/social" routerLinkActive="active"><span class="nav-icon">◉</span><span>Study groups</span></a>
               </div>}
@@ -145,6 +146,7 @@ const TOUR_STEPS = [
             <a routerLink="/backlog" (click)="mobileMoreOpen.set(false)"><span>☷</span><strong>Backlog</strong><small>Upcoming and full plan</small></a>
             <a routerLink="/mastery" (click)="mobileMoreOpen.set(false)"><span>✓</span><strong>Mastery</strong><small>Checkpoint results</small></a>
             <a routerLink="/study-history" (click)="mobileMoreOpen.set(false)"><span>◷</span><strong>Study history</strong><small>Actual focus time</small></a>
+            <a routerLink="/videos" (click)="mobileMoreOpen.set(false)"><span>▶</span><strong>Video finder</strong><small>AI-assisted lesson videos</small></a>
             <a routerLink="/ai-coach" (click)="mobileMoreOpen.set(false)"><span>✦</span><strong>Coach</strong><small>Learning guidance</small></a>
             <a routerLink="/career/applications" (click)="mobileMoreOpen.set(false)"><span>▤</span><strong>Applications</strong><small>Career pipeline</small></a>
             <a routerLink="/notifications" (click)="mobileMoreOpen.set(false)"><span>◉</span><strong>Notifications</strong><small>Updates and reminders</small></a>
