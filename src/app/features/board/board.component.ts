@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { RouterLink } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { LearningPath, Phase, Lesson, LessonStatus } from '../../models/learning.models';
 import { ActionDialogComponent } from '../../shared/action-dialog.component';
@@ -10,7 +11,7 @@ import { LessonDetailDialogComponent } from './lesson-detail-dialog.component';
 
 @Component({
   standalone: true,
-  imports: [FormsModule, DragDropModule, MatButtonModule, MatDialogModule],
+  imports: [FormsModule, DragDropModule, MatButtonModule, MatDialogModule, RouterLink],
   styleUrl: './board.component.css',
   template: `
     <section class="page-enter board-page">
@@ -18,20 +19,21 @@ import { LessonDetailDialogComponent } from './lesson-detail-dialog.component';
         <div>
           <span class="eyebrow">Learning / Board</span>
           <h1>Board</h1>
-          <p class="muted">Drag lessons between workflow stages, or select a card to open its details and discussion.</p>
+          <p class="muted">Keep the board focused on the work closest to you. The full plan stays organised in Backlog.</p>
         </div>
         <div class="board-controls">
-          <span class="board-count">{{ allLessons().length }} work items</span>
+          <span class="board-count">{{ allLessons().length }} total items</span>
           <select [(ngModel)]="selectedPath" (change)="loadBoard()" aria-label="Select learning path">
             <option value="">Select learning path</option>
             @for (path of paths(); track path._id) { <option [value]="path._id">{{ path.title }}</option> }
           </select>
+          <a class="backlog-button" routerLink="/backlog" [queryParams]="{ path: selectedPath }">Open backlog</a>
         </div>
       </div>
 
       <div class="board-actions-row">
         <div class="quick-filter"><button type="button" class="filter-active">All</button><button type="button">My lessons</button><button type="button">Scheduled</button></div>
-        <span class="board-view-note">Drag cards to update status · Select to open details</span>
+        <span class="board-view-note">Showing up to {{ boardItemLimit }} items per stage · Drag cards to update status</span>
       </div>
 
       <div class="board-scroll-shell">
@@ -48,7 +50,7 @@ import { LessonDetailDialogComponent } from './lesson-detail-dialog.component';
                 [cdkDropListData]="status"
                 [cdkDropListConnectedTo]="dropListIds"
                 (cdkDropListDropped)="drop($event)">
-                @for (lesson of byStatus(status); track lesson._id) {
+                @for (lesson of visibleByStatus(status); track lesson._id) {
                   <article
                     class="ticket issue-ticket"
                     tabindex="0"
@@ -71,6 +73,11 @@ import { LessonDetailDialogComponent } from './lesson-detail-dialog.component';
                   </article>
                 } @empty { <div class="column-empty"><p>No work items</p></div> }
               </div>
+              @if (hiddenCount(status) > 0) {
+                <a class="column-overflow-link" routerLink="/backlog" [queryParams]="{ path: selectedPath, status: status }">
+                  <span>+{{ hiddenCount(status) }} more</span><strong>View in backlog →</strong>
+                </a>
+              }
             </div>
           }
         </div>
@@ -84,6 +91,7 @@ export class BoardComponent implements OnInit {
   readonly paths = signal<LearningPath[]>([]);
   readonly phases = signal<Phase[]>([]);
   readonly dragging = signal(false);
+  readonly boardItemLimit = 6;
   selectedPath = '';
   readonly statuses: LessonStatus[] = ['BACKLOG', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'MISSED', 'SKIPPED'];
   readonly dropListIds = this.statuses.map(status => this.dropListId(status));
@@ -102,6 +110,8 @@ export class BoardComponent implements OnInit {
 
   allLessons(): Lesson[] { return this.phases().flatMap(phase => phase.modules.flatMap(module => module.lessons)); }
   byStatus(status: LessonStatus): Lesson[] { return this.allLessons().filter(lesson => lesson.status === status); }
+  visibleByStatus(status: LessonStatus): Lesson[] { return this.byStatus(status).slice(0, this.boardItemLimit); }
+  hiddenCount(status: LessonStatus): number { return Math.max(0, this.byStatus(status).length - this.boardItemLimit); }
   label(status: LessonStatus): string { return status.replaceAll('_', ' ').toLowerCase(); }
   shortId(id: string): string { return id.slice(-6).toUpperCase(); }
   dropListId(status: LessonStatus): string { return `lesson-status-${status.toLowerCase()}`; }
