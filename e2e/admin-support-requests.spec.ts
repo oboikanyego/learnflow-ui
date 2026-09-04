@@ -14,11 +14,11 @@ async function adminSession(page: Page) {
   await page.route(`${API}/notifications`, route => route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
 }
 
-test('admin can view and resolve support requests', async ({ page }) => {
+test('admin can view and resolve unified support requests', async ({ page }) => {
   await adminSession(page);
   let resolved = false;
   await page.route(/\/api\/v1\/admin\/support-requests(?:\?.*)?$/, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
-    items: [{ _id: 'support-1', name: 'UAT Learner', email: 'learner.uat@example.com', subject: 'Video will not play', message: 'The selected lesson video does not start.', category: 'VIDEO', status: resolved ? 'RESOLVED' : 'OPEN', resolutionNote: resolved ? 'Video source was refreshed.' : undefined, createdAt: new Date().toISOString() }],
+    items: [{ _id: 'support-1', type: 'SUPPORT', name: 'UAT Learner', email: 'learner.uat@example.com', subject: 'Video will not play', message: 'The selected lesson video does not start.', category: 'VIDEO', status: resolved ? 'RESOLVED' : 'OPEN', resolutionNote: resolved ? 'Video source was refreshed.' : undefined, createdAt: new Date().toISOString() }],
     page: 1, pageSize: 12, total: 1, totalPages: 1, counts: resolved ? { RESOLVED: 1 } : { OPEN: 1 }
   }) }));
   await page.route(/\/api\/v1\/admin\/support-requests\/support-1\/status$/, async route => {
@@ -30,6 +30,7 @@ test('admin can view and resolve support requests', async ({ page }) => {
   page.on('dialog', dialog => dialog.accept('Video source was refreshed.'));
   await page.goto('/admin/support-requests');
   await expect(page.getByRole('heading', { name: 'Support requests' })).toBeVisible();
+  await expect(page.getByText('Support', { exact: true })).toBeVisible();
   await expect(page.getByText('Video will not play')).toBeVisible();
   await page.getByRole('button', { name: 'Resolve' }).click();
   await expect(page.getByText('Resolved')).toBeVisible();
