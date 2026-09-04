@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
-import { tap } from 'rxjs';
+import { firstValueFrom, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface NotificationPreferences {
@@ -40,6 +40,7 @@ export class AuthService {
   private readonly tokenKey = 'learnflow_access_token';
   private readonly userState = signal<AuthUser | null>(null);
   private readonly tokenState = signal<string | null>(this.validStoredToken());
+  private sessionValidation?: Promise<boolean>;
 
   readonly user = this.userState.asReadonly();
   readonly isAuthenticated = computed(() => this.isTokenValid(this.tokenState()));
@@ -58,16 +59,23 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/api/v1/auth/login`, input).pipe(tap(response => this.persist(response)));
   }
 
-  forgotPassword(email: string) {
-    return this.http.post<ForgotPasswordResponse>(`${environment.apiUrl}/api/v1/auth/forgot-password`, { email });
-  }
-
-  resetPassword(token: string, password: string) {
-    return this.http.post<ResetPasswordResponse>(`${environment.apiUrl}/api/v1/auth/reset-password`, { token, password });
-  }
+  forgotPassword(email: string) { return this.http.post<ForgotPasswordResponse>(`${environment.apiUrl}/api/v1/auth/forgot-password`, { email }); }
+  resetPassword(token: string, password: string) { return this.http.post<ResetPasswordResponse>(`${environment.apiUrl}/api/v1/auth/reset-password`, { token, password }); }
 
   loadProfile() {
     return this.http.get<AuthUser>(`${environment.apiUrl}/api/v1/auth/me`).pipe(tap(user => this.userState.set(user)));
+  }
+
+  async ensureSession(): Promise<boolean> {
+    if (!this.getToken()) return false;
+    if (this.userState()) return true;
+    if (!this.sessionValidation) {
+      this.sessionValidation = firstValueFrom(this.loadProfile())
+        .then(() => true)
+        .catch(() => { this.logout(); return false; })
+        .finally(() => { this.sessionValidation = undefined; });
+    }
+    return this.sessionValidation;
   }
 
   updateProfile(input: { name: string; timezone: string; dateOfBirth?: string }) {
@@ -98,10 +106,7 @@ export class AuthService {
   }
 
   updateNotificationPreferences(preferences: NotificationPreferences) {
-    return this.http.patch<{ notificationPreferences: NotificationPreferences }>(
-      `${environment.apiUrl}/api/v1/auth/notification-preferences`,
-      preferences
-    ).pipe(tap(response => {
+    return this.http.patch<{ notificationPreferences: NotificationPreferences }>(`${environment.apiUrl}/api/v1/auth/notification-preferences`, preferences).pipe(tap(response => {
       const current = this.userState();
       if (current) this.userState.set({ ...current, notificationPreferences: response.notificationPreferences });
     }));
@@ -111,6 +116,7 @@ export class AuthService {
     sessionStorage.removeItem(this.tokenKey);
     this.tokenState.set(null);
     this.userState.set(null);
+    this.sessionValidation = undefined;
   }
 
   getToken(): string | null {
@@ -138,9 +144,7 @@ export class AuthService {
       const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
       const payload = JSON.parse(atob(padded)) as { exp?: number };
       return typeof payload.exp === 'number' && payload.exp * 1000 > Date.now();
-    } catch {
-      return false;
-    }
+    } catch { return false; }
   }
 
   private persist(response: AuthResponse): void {
