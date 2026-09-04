@@ -91,14 +91,14 @@ export class SupportRequestsComponent {
     const params = new URLSearchParams({ page: String(this.page), pageSize: '12' });
     if (this.status) params.set('status', this.status);
     if (this.query.trim()) params.set('q', this.query.trim());
-    this.api.get<SupportResponse>(`/admin/support-requests?${params.toString()}`).subscribe({ next: value => this.data.set(value), error: err => this.error.set(err?.error?.message || 'Unable to load support requests.') });
+    this.api.get<SupportResponse>(`/api/v1/admin/support-requests?${params.toString()}`).subscribe({ next: value => this.data.set(value), error: err => this.error.set(err?.error?.message || 'Unable to load support requests.') });
   }
 
   setPage(page: number): void { this.page = Math.max(1, page); this.load(); }
   label(value: string): string { return value.replace('_', ' ').toLowerCase().replace(/^./, char => char.toUpperCase()); }
 
   updateStatus(item: SupportRequest, status: SupportRequest['status'], resolutionNote?: string): void {
-    this.api.patch(`/admin/support-requests/${item._id}/status`, { status, ...(resolutionNote ? { resolutionNote } : {}) }).subscribe({ next: () => this.load(), error: err => this.error.set(err?.error?.message || 'Unable to update support request.') });
+    this.api.patch(`/api/v1/admin/support-requests/${item._id}/status`, { status, ...(resolutionNote ? { resolutionNote } : {}) }).subscribe({ next: () => this.load(), error: err => this.error.set(err?.error?.message || 'Unable to update support request.') });
   }
 
   resolve(item: SupportRequest): void {
