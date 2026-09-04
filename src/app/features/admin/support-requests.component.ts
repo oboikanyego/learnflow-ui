@@ -7,12 +7,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ApiService } from '../../core/services/api.service';
 
+type RequestSource = 'CONTACT' | 'FEEDBACK' | 'SUPPORT';
+
 interface SupportRequest {
   _id: string;
+  type: RequestSource;
   name: string;
   email: string;
   subject: string;
   message: string;
+  rating?: number;
   category?: string;
   status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED';
   resolutionNote?: string;
@@ -35,7 +39,7 @@ interface SupportResponse {
   template: `
     <section class="page-enter support-admin-page">
       <header class="page-head">
-        <div><span class="eyebrow">Administration</span><h1>Support requests</h1><p class="muted">Review user issues, move work through the support queue and notify the user in-app when a request is resolved.</p></div>
+        <div><span class="eyebrow">Administration</span><h1>Support requests</h1><p class="muted">Contact, feedback and support submissions are managed in one queue. Outbound communications remain disabled during the pre-revenue testing phase.</p></div>
         <button mat-stroked-button type="button" (click)="load()">Refresh</button>
       </header>
 
@@ -48,6 +52,7 @@ interface SupportResponse {
         </div>
 
         <div class="filters">
+          <mat-form-field appearance="outline"><mat-label>Source</mat-label><mat-select [(ngModel)]="type" (selectionChange)="setPage(1)"><mat-option value="">All</mat-option><mat-option value="CONTACT">Contact</mat-option><mat-option value="FEEDBACK">Feedback</mat-option><mat-option value="SUPPORT">Support</mat-option></mat-select></mat-form-field>
           <mat-form-field appearance="outline"><mat-label>Status</mat-label><mat-select [(ngModel)]="status" (selectionChange)="setPage(1)"><mat-option value="">All</mat-option><mat-option value="OPEN">Open</mat-option><mat-option value="IN_PROGRESS">In progress</mat-option><mat-option value="RESOLVED">Resolved</mat-option></mat-select></mat-form-field>
           <mat-form-field appearance="outline"><mat-label>Search</mat-label><input matInput [(ngModel)]="query" (keyup.enter)="setPage(1)" placeholder="Name, email, subject..."></mat-form-field>
           <button mat-flat-button type="button" (click)="setPage(1)">Apply</button>
@@ -56,7 +61,8 @@ interface SupportResponse {
         <div class="request-list">
           @for (item of d.items; track item._id) {
             <article class="request-card">
-              <div class="request-head"><div><span class="status" [attr.data-status]="item.status">{{label(item.status)}}</span><h2>{{item.subject}}</h2><p>{{item.name}} · {{item.email}} · {{item.category || 'Other'}} · {{item.createdAt | date:'medium'}}</p></div></div>
+              <div class="request-head"><div><div class="badges"><span class="source" [attr.data-source]="item.type">{{label(item.type)}}</span><span class="status" [attr.data-status]="item.status">{{label(item.status)}}</span></div><h2>{{item.subject}}</h2><p>{{item.name}} · {{item.email}} · {{item.category || 'Other'}} · {{item.createdAt | date:'medium'}}</p></div></div>
+              @if (item.type === 'FEEDBACK' && item.rating) {<div class="rating">Rating: {{item.rating}} / 5</div>}
               <p class="message">{{item.message}}</p>
               @if (item.status === 'RESOLVED' && item.resolutionNote) {<div class="resolution"><strong>Resolution</strong><span>{{item.resolutionNote}}</span></div>}
               <div class="actions">
@@ -73,7 +79,7 @@ interface SupportResponse {
     </section>
   `,
   styles: [`
-    .support-admin-page{max-width:1180px;margin:0 auto}.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.summary-grid article{padding:18px;border:1px solid #e4e7ec;border-radius:14px;background:#fff}.summary-grid span{display:block;color:#667085;font-size:.72rem}.summary-grid strong{display:block;margin-top:5px;font-size:1.6rem;color:#101828}.filters{display:grid;grid-template-columns:220px minmax(0,1fr) auto;gap:12px;align-items:start;margin-bottom:16px}.request-list{display:grid;gap:12px}.request-card{padding:20px;border:1px solid #e4e7ec;border-radius:14px;background:#fff}.request-head h2{margin:8px 0 5px;font-size:1.05rem}.request-head p{margin:0;color:#667085;font-size:.76rem;overflow-wrap:anywhere}.status{display:inline-flex;padding:5px 8px;border-radius:999px;background:#f2f4f7;color:#475467;font-size:.65rem;font-weight:800}.status[data-status="OPEN"]{background:#fff4e5;color:#b54708}.status[data-status="IN_PROGRESS"]{background:#eff4ff;color:#1849a9}.status[data-status="RESOLVED"]{background:#ecfdf3;color:#027a48}.message{margin:16px 0;color:#344054;line-height:1.65;white-space:pre-wrap}.resolution{padding:12px;border-radius:10px;background:#f6fef9;display:flex;flex-direction:column;gap:4px;color:#027a48}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.pager{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:18px}.empty,.error,.loading{padding:28px;border:1px dashed #d0d5dd;border-radius:14px;text-align:center;color:#667085}@media(max-width:760px){.summary-grid{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr}.actions button{width:100%}}
+    .support-admin-page{max-width:1180px;margin:0 auto}.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.summary-grid article{padding:18px;border:1px solid #e4e7ec;border-radius:14px;background:#fff}.summary-grid span{display:block;color:#667085;font-size:.72rem}.summary-grid strong{display:block;margin-top:5px;font-size:1.6rem;color:#101828}.filters{display:grid;grid-template-columns:180px 200px minmax(0,1fr) auto;gap:12px;align-items:start;margin-bottom:16px}.request-list{display:grid;gap:12px}.request-card{padding:20px;border:1px solid #e4e7ec;border-radius:14px;background:#fff}.request-head h2{margin:8px 0 5px;font-size:1.05rem}.request-head p{margin:0;color:#667085;font-size:.76rem;overflow-wrap:anywhere}.badges{display:flex;gap:7px;flex-wrap:wrap}.status,.source{display:inline-flex;padding:5px 8px;border-radius:999px;background:#f2f4f7;color:#475467;font-size:.65rem;font-weight:800}.source[data-source="CONTACT"]{background:#f4f3ff;color:#5925dc}.source[data-source="FEEDBACK"]{background:#fff6ed;color:#c4320a}.source[data-source="SUPPORT"]{background:#eef4ff;color:#175cd3}.status[data-status="OPEN"]{background:#fff4e5;color:#b54708}.status[data-status="IN_PROGRESS"]{background:#eff4ff;color:#1849a9}.status[data-status="RESOLVED"]{background:#ecfdf3;color:#027a48}.rating{margin-top:12px;font-size:.75rem;font-weight:800;color:#475467}.message{margin:16px 0;color:#344054;line-height:1.65;white-space:pre-wrap}.resolution{padding:12px;border-radius:10px;background:#f6fef9;display:flex;flex-direction:column;gap:4px;color:#027a48}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.pager{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:18px}.empty,.error,.loading{padding:28px;border:1px dashed #d0d5dd;border-radius:14px;text-align:center;color:#667085}@media(max-width:900px){.filters{grid-template-columns:1fr 1fr}.filters mat-form-field:nth-child(3){grid-column:1/-1}}@media(max-width:760px){.summary-grid{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr}.filters mat-form-field:nth-child(3){grid-column:auto}.actions button{width:100%}}
   `]
 })
 export class SupportRequestsComponent {
@@ -81,6 +87,7 @@ export class SupportRequestsComponent {
   readonly data = signal<SupportResponse | null>(null);
   readonly error = signal('');
   page = 1;
+  type = '';
   status = '';
   query = '';
 
@@ -89,6 +96,7 @@ export class SupportRequestsComponent {
   load(): void {
     this.error.set('');
     const params = new URLSearchParams({ page: String(this.page), pageSize: '12' });
+    if (this.type) params.set('type', this.type);
     if (this.status) params.set('status', this.status);
     if (this.query.trim()) params.set('q', this.query.trim());
     this.api.get<SupportResponse>(`/api/v1/admin/support-requests?${params.toString()}`).subscribe({ next: value => this.data.set(value), error: err => this.error.set(err?.error?.message || 'Unable to load support requests.') });
@@ -102,7 +110,7 @@ export class SupportRequestsComponent {
   }
 
   resolve(item: SupportRequest): void {
-    const note = window.prompt('Optional resolution note to include in the user notification:', '') ?? '';
+    const note = window.prompt('Optional resolution note to include in the user in-app notification:', '') ?? '';
     this.updateStatus(item, 'RESOLVED', note.trim());
   }
 }
