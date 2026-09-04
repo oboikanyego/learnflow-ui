@@ -39,10 +39,10 @@ export interface ResetPasswordResponse { message: string; }
 export class AuthService {
   private readonly tokenKey = 'learnflow_access_token';
   private readonly userState = signal<AuthUser | null>(null);
-  private readonly tokenState = signal<string | null>(sessionStorage.getItem(this.tokenKey));
+  private readonly tokenState = signal<string | null>(this.validStoredToken());
 
   readonly user = this.userState.asReadonly();
-  readonly isAuthenticated = computed(() => !!this.tokenState());
+  readonly isAuthenticated = computed(() => this.isTokenValid(this.tokenState()));
 
   constructor(private readonly http: HttpClient) {}
 
@@ -113,7 +113,35 @@ export class AuthService {
     this.userState.set(null);
   }
 
-  getToken(): string | null { return this.tokenState(); }
+  getToken(): string | null {
+    const token = this.tokenState();
+    if (!this.isTokenValid(token)) {
+      if (token) this.logout();
+      return null;
+    }
+    return token;
+  }
+
+  private validStoredToken(): string | null {
+    const token = sessionStorage.getItem(this.tokenKey);
+    if (this.isTokenValid(token)) return token;
+    sessionStorage.removeItem(this.tokenKey);
+    return null;
+  }
+
+  private isTokenValid(token: string | null): boolean {
+    if (!token) return false;
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return false;
+      const normalized = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+      const payload = JSON.parse(atob(padded)) as { exp?: number };
+      return typeof payload.exp === 'number' && payload.exp * 1000 > Date.now();
+    } catch {
+      return false;
+    }
+  }
 
   private persist(response: AuthResponse): void {
     sessionStorage.setItem(this.tokenKey, response.token);
