@@ -8,6 +8,8 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent) },
   { path: 'about', loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent) },
   { path: 'contact', loadComponent: () => import('./features/contact/contact.component').then(m => m.ContactComponent) },
+  { path: 'feedback', canActivate: [authGuard], loadComponent: () => import('./features/feedback/feedback.component').then(m => m.FeedbackComponent) },
+  { path: 'support', canActivate: [authGuard], loadComponent: () => import('./features/support/support.component').then(m => m.SupportComponent) },
   { path: 'share/:token', loadComponent: () => import('./features/sharing/public-progress.component').then(m => m.PublicProgressComponent) },
   { path: 'login', loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent) },
   { path: 'register', loadComponent: () => import('./features/auth/register.component').then(m => m.RegisterComponent) },
