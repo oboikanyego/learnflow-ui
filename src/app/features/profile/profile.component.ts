@@ -33,61 +33,17 @@ const TIMEZONE_OPTIONS: TimezoneOption[] = [
       <div class="profile-grid">
         <article class="profile-card identity-card">
           <div class="card-head"><div><span class="mini-label">Profile</span><h3>Personal information</h3><p>Used across your workspace, reminders and account experience.</p></div></div>
-
-          <div class="profile-photo-editor">
-            <div class="profile-photo-shell">
-              @if(auth.user()?.profileImageUrl){
-                <img [src]="auth.user()?.profileImageUrl" [alt]="(auth.user()?.name || name || 'User') + ' profile picture'">
-              } @else {
-                <span>{{initials()}}</span>
-              }
-            </div>
-            <div class="profile-photo-copy">
-              <strong>Profile picture</strong>
-              <span>JPG, PNG or WebP. Maximum 5 MB. LearnFlow stores the image securely in Cloudinary.</span>
-              <div class="photo-actions">
-                <input #photoInput class="file-input" type="file" accept="image/jpeg,image/png,image/webp" (change)="onProfileImageSelected($event)">
-                <button mat-stroked-button type="button" [disabled]="uploadingImage()" (click)="photoInput.click()">{{uploadingImage()?'Uploading…':(auth.user()?.profileImageUrl?'Replace picture':'Upload picture')}}</button>
-                @if(auth.user()?.profileImageUrl){<button mat-button type="button" class="remove-photo" [disabled]="uploadingImage()" (click)="removeProfileImage()">Remove</button>}
-              </div>
-            </div>
-          </div>
-
+          <div class="profile-photo-editor"><div class="profile-photo-shell">@if(auth.user()?.profileImageUrl){<img [src]="auth.user()?.profileImageUrl" [alt]="(auth.user()?.name || name || 'User') + ' profile picture'">}@else{<span>{{initials()}}</span>}</div><div class="profile-photo-copy"><strong>Profile picture</strong><span>JPG, PNG or WebP. Maximum 5 MB. LearnFlow stores the image securely in Cloudinary.</span><div class="photo-actions"><input #photoInput class="file-input" type="file" accept="image/jpeg,image/png,image/webp" (change)="onProfileImageSelected($event)"><button mat-stroked-button type="button" [disabled]="uploadingImage()" (click)="photoInput.click()">{{uploadingImage()?'Uploading…':(auth.user()?.profileImageUrl?'Replace picture':'Upload picture')}}</button>@if(auth.user()?.profileImageUrl){<button mat-button type="button" class="remove-photo" [disabled]="uploadingImage()" (click)="removeProfileImage()">Remove</button>}</div></div></div>
           <mat-form-field appearance="outline"><mat-label>Full name</mat-label><input matInput [(ngModel)]="name"></mat-form-field>
           <mat-form-field appearance="outline"><mat-label>Email</mat-label><input matInput [value]="email" disabled><mat-hint>Email changes will require verification in a later phase.</mat-hint></mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Date of birth</mat-label>
-            <input matInput type="date" [(ngModel)]="dateOfBirth" [max]="latestBirthDate()" autocomplete="bday">
-            <mat-hint>Used to apply the correct YouTube age-safety policy. Minimum account age: {{minimumAge()}}.</mat-hint>
-          </mat-form-field>
+          <mat-form-field appearance="outline"><mat-label>Date of birth</mat-label><input matInput type="date" [(ngModel)]="dateOfBirth" [max]="latestBirthDate()" autocomplete="bday"><mat-hint>Used to apply the correct YouTube age-safety policy. Minimum account age: {{minimumAge()}}.</mat-hint></mat-form-field>
           @if(!dateOfBirth){<div class="age-warning"><strong>Age profile missing</strong><span>Until you add your date of birth, Video Finder uses strict filtering and blocks age-restricted YouTube content.</span></div>}
-          <mat-form-field appearance="outline">
-            <mat-label>Timezone</mat-label>
-            <mat-select [(ngModel)]="timezone" placeholder="Select your timezone">
-              @for(zone of timezones;track zone.value){<mat-option [value]="zone.value">{{zone.label}}</mat-option>}
-            </mat-select>
-            <mat-hint>Controls lesson times, reminders and weekly activity reporting.</mat-hint>
-          </mat-form-field>
+          <mat-form-field appearance="outline"><mat-label>Timezone</mat-label><mat-select [(ngModel)]="timezone" placeholder="Select your timezone">@for(zone of timezones;track zone.value){<mat-option [value]="zone.value">{{zone.label}}</mat-option>}</mat-select><mat-hint>Controls lesson times, reminders and weekly activity reporting.</mat-hint></mat-form-field>
           @if(profileMessage()){<div class="feedback success">{{profileMessage()}}</div>}@if(profileError()){<div class="feedback error">{{profileError()}}</div>}
           <div class="actions"><button mat-flat-button class="primary-cta" [disabled]="savingProfile()" (click)="saveProfile()">{{savingProfile()?'Saving…':'Save profile'}}</button></div>
         </article>
-
-        <article class="profile-card plan-card">
-          <div class="plan-top"><span class="mini-label">Entitlement</span><span class="plan-pill">{{auth.user()?.entitlement?.plan||'FREE'}}</span></div>
-          <h3>{{auth.user()?.entitlement?.plan==='PRO'?'LearnFlow Pro':'LearnFlow Free'}}</h3>
-          <p>Your entitlement controls access and plan-specific AI allowances. Runtime limits are managed centrally by LearnFlow administrators.</p>
-          <div class="entitlement-list"><div><span>Plan status</span><strong>{{auth.user()?.entitlement?.status||'ACTIVE'}}</strong></div><div><span>Account role</span><strong>{{auth.user()?.role||'learner'}}</strong></div><div><span>Managed by</span><strong>{{auth.user()?.entitlement?.source||'SYSTEM'}}</strong></div></div>
-          <div class="plan-note">AI planner, AI coach and YouTube search quotas are database-managed, so policy changes can take effect without redeploying the app.</div>
-        </article>
-
-        <article class="profile-card security-card">
-          <div class="card-head"><div><span class="mini-label">Security</span><h3>Change password</h3><p>Confirm your current password before choosing a new one.</p></div></div>
-          <mat-form-field appearance="outline"><mat-label>Current password</mat-label><input matInput [type]="showCurrent?'text':'password'" [(ngModel)]="currentPassword"><button mat-button matSuffix type="button" (click)="showCurrent=!showCurrent">{{showCurrent?'Hide':'Show'}}</button></mat-form-field>
-          <mat-form-field appearance="outline"><mat-label>New password</mat-label><input matInput [type]="showNew?'text':'password'" [(ngModel)]="newPassword"><button mat-button matSuffix type="button" (click)="showNew=!showNew">{{showNew?'Hide':'Show'}}</button><mat-hint>Use at least 8 characters.</mat-hint></mat-form-field>
-          <mat-form-field appearance="outline"><mat-label>Confirm new password</mat-label><input matInput [type]="showNew?'text':'password'" [(ngModel)]="confirmPassword"></mat-form-field>
-          @if(passwordMessage()){<div class="feedback success">{{passwordMessage()}}</div>}@if(passwordError()){<div class="feedback error">{{passwordError()}}</div>}
-          <div class="actions"><button mat-stroked-button [disabled]="savingPassword()||!passwordValid()" (click)="changePassword()">{{savingPassword()?'Updating…':'Update password'}}</button></div>
-        </article>
+        <article class="profile-card plan-card"><div class="plan-top"><span class="mini-label">Entitlement</span><span class="plan-pill">{{auth.user()?.entitlement?.plan||'FREE'}}</span></div><h3>{{auth.user()?.entitlement?.plan==='PRO'?'LearnFlow Pro':'LearnFlow Free'}}</h3><p>Your entitlement controls access and plan-specific AI allowances. Runtime limits are managed centrally by LearnFlow administrators.</p><div class="entitlement-list"><div><span>Plan status</span><strong>{{auth.user()?.entitlement?.status||'ACTIVE'}}</strong></div><div><span>Account role</span><strong>{{auth.user()?.role||'learner'}}</strong></div><div><span>Managed by</span><strong>{{auth.user()?.entitlement?.source||'SYSTEM'}}</strong></div></div><div class="plan-note">AI planner, AI coach and YouTube search quotas are database-managed, so policy changes can take effect without redeploying the app.</div></article>
+        <article class="profile-card security-card"><div class="card-head"><div><span class="mini-label">Security</span><h3>Change password</h3><p>Confirm your current password before choosing a new one.</p></div></div><mat-form-field appearance="outline"><mat-label>Current password</mat-label><input matInput [type]="showCurrent?'text':'password'" [(ngModel)]="currentPassword"><button mat-button matSuffix type="button" (click)="showCurrent=!showCurrent">{{showCurrent?'Hide':'Show'}}</button></mat-form-field><mat-form-field appearance="outline"><mat-label>New password</mat-label><input matInput [type]="showNew?'text':'password'" [(ngModel)]="newPassword"><button mat-button matSuffix type="button" (click)="showNew=!showNew">{{showNew?'Hide':'Show'}}</button><mat-hint>Use at least 8 characters.</mat-hint></mat-form-field><mat-form-field appearance="outline"><mat-label>Confirm new password</mat-label><input matInput [type]="showNew?'text':'password'" [(ngModel)]="confirmPassword"></mat-form-field>@if(passwordMessage()){<div class="feedback success">{{passwordMessage()}}</div>}@if(passwordError()){<div class="feedback error">{{passwordError()}}</div>}<div class="actions"><button mat-stroked-button [disabled]="savingPassword()||!passwordValid()" (click)="changePassword()">{{savingPassword()?'Updating…':'Update password'}}</button></div></article>
       </div>
     </section>
   `,
@@ -100,23 +56,20 @@ export class ProfileComponent implements OnInit{
   readonly savingProfile=signal(false);readonly savingPassword=signal(false);readonly uploadingImage=signal(false);readonly profileMessage=signal('');readonly profileError=signal('');readonly passwordMessage=signal('');readonly passwordError=signal('');readonly minimumAge=signal(13);
   readonly latestBirthDate=computed(()=>{const date=new Date();date.setFullYear(date.getFullYear()-this.minimumAge());return date.toISOString().slice(0,10);});
   readonly timezones: TimezoneOption[] = [...TIMEZONE_OPTIONS];
+  private savedProfile='';
 
   ngOnInit(){
     this.auth.registrationPolicy().subscribe({next:policy=>this.minimumAge.set(policy.minimumAge),error:()=>undefined});
-    this.auth.loadProfile().subscribe({next:user=>{this.name=user.name;this.email=user.email;this.timezone=user.timezone;this.dateOfBirth=user.dateOfBirth?.slice(0,10)??'';if(!this.timezones.some(zone=>zone.value===user.timezone))this.timezones.unshift({value:user.timezone,label:this.friendlyTimezone(user.timezone)});}});
+    this.auth.loadProfile().subscribe({next:user=>{this.name=user.name;this.email=user.email;this.timezone=user.timezone;this.dateOfBirth=user.dateOfBirth?.slice(0,10)??'';if(!this.timezones.some(zone=>zone.value===user.timezone))this.timezones.unshift({value:user.timezone,label:this.friendlyTimezone(user.timezone)});this.captureSavedProfile();}});
   }
   initials(){return(this.auth.user()?.name||this.name||'LF').split(/\s+/).slice(0,2).map(v=>v[0]??'').join('').toUpperCase();}
-  saveProfile(){if(this.savingProfile())return;this.profileMessage.set('');this.profileError.set('');if(this.dateOfBirth&&this.dateOfBirth>this.latestBirthDate()){this.profileError.set(`You must be at least ${this.minimumAge()} years old.`);return;}this.savingProfile.set(true);this.auth.updateProfile({name:this.name.trim(),timezone:this.timezone,...(this.dateOfBirth?{dateOfBirth:this.dateOfBirth}:{})}).subscribe({next:()=>{this.profileMessage.set('Profile updated successfully.');this.savingProfile.set(false);},error:e=>{this.profileError.set(e.error?.message??'Unable to update profile.');this.savingProfile.set(false);}});}
+  hasUnsavedChanges(){return this.profileSnapshot()!==this.savedProfile||Boolean(this.currentPassword||this.newPassword||this.confirmPassword);}
+  saveProfile(){if(this.savingProfile())return;this.profileMessage.set('');this.profileError.set('');if(this.dateOfBirth&&this.dateOfBirth>this.latestBirthDate()){this.profileError.set(`You must be at least ${this.minimumAge()} years old.`);return;}this.savingProfile.set(true);this.auth.updateProfile({name:this.name.trim(),timezone:this.timezone,...(this.dateOfBirth?{dateOfBirth:this.dateOfBirth}:{})}).subscribe({next:()=>{this.name=this.name.trim();this.captureSavedProfile();this.profileMessage.set('Profile updated successfully.');this.savingProfile.set(false);},error:e=>{this.profileError.set(e.error?.message??'Unable to update profile.');this.savingProfile.set(false);}});}
   onProfileImageSelected(event:Event){const input=event.target as HTMLInputElement;const file=input.files?.[0];input.value='';if(!file)return;this.profileMessage.set('');this.profileError.set('');if(!['image/jpeg','image/png','image/webp'].includes(file.type)){this.profileError.set('Choose a JPG, PNG or WebP image.');return;}if(file.size>5*1024*1024){this.profileError.set('Profile pictures must be 5 MB or smaller.');return;}this.uploadingImage.set(true);this.auth.uploadProfileImage(file).subscribe({next:r=>{this.profileMessage.set(r.message);this.uploadingImage.set(false);},error:e=>{this.profileError.set(e.error?.message??'Unable to upload profile picture.');this.uploadingImage.set(false);}});}
   removeProfileImage(){if(this.uploadingImage())return;this.profileMessage.set('');this.profileError.set('');this.uploadingImage.set(true);this.auth.removeProfileImage().subscribe({next:r=>{this.profileMessage.set(r.message);this.uploadingImage.set(false);},error:e=>{this.profileError.set(e.error?.message??'Unable to remove profile picture.');this.uploadingImage.set(false);}});}
   passwordValid(){return this.currentPassword.length>=8&&this.newPassword.length>=8&&this.newPassword===this.confirmPassword;}
   changePassword(){if(!this.passwordValid()||this.savingPassword())return;this.passwordMessage.set('');this.passwordError.set('');this.savingPassword.set(true);this.auth.changePassword({currentPassword:this.currentPassword,newPassword:this.newPassword}).subscribe({next:r=>{this.passwordMessage.set(r.message);this.currentPassword='';this.newPassword='';this.confirmPassword='';this.savingPassword.set(false);},error:e=>{this.passwordError.set(e.error?.message??'Unable to change password.');this.savingPassword.set(false);}});}
-
-  private friendlyTimezone(value:string):string{
-    if(value==='UTC')return'UTC · Coordinated Universal Time';
-    const parts=value.split('/');
-    const city=(parts.at(-1)??value).replaceAll('_',' ');
-    const region=parts.length>1?parts[0].replaceAll('_',' '):'';
-    return region?`${city} · ${region}`:city;
-  }
+  private profileSnapshot(){return JSON.stringify({name:this.name.trim(),timezone:this.timezone,dateOfBirth:this.dateOfBirth});}
+  private captureSavedProfile(){this.savedProfile=this.profileSnapshot();}
+  private friendlyTimezone(value:string):string{if(value==='UTC')return'UTC · Coordinated Universal Time';const parts=value.split('/');const city=(parts.at(-1)??value).replaceAll('_',' ');const region=parts.length>1?parts[0].replaceAll('_',' '):'';return region?`${city} · ${region}`:city;}
 }

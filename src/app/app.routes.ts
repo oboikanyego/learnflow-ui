@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './core/auth/admin.guard';
 import { authGuard } from './core/auth/auth.guard';
+import { videoSafetyGuard } from './core/auth/video-safety.guard';
+import { pendingChangesGuard } from './core/navigation/pending-changes.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent) },
@@ -17,7 +20,7 @@ export const routes: Routes = [
   { path: 'assess/:lessonId', canActivate: [authGuard], loadComponent: () => import('./features/assessment/assessment.component').then(m => m.AssessmentComponent) },
   { path: 'mastery', canActivate: [authGuard], loadComponent: () => import('./features/assessment/mastery.component').then(m => m.MasteryComponent) },
   { path: 'study-history', canActivate: [authGuard], loadComponent: () => import('./features/focus/study-history.component').then(m => m.StudyHistoryComponent) },
-  { path: 'videos', canActivate: [authGuard], loadComponent: () => import('./features/video-finder/video-finder.component').then(m => m.VideoFinderComponent) },
+  { path: 'videos', canActivate: [authGuard, videoSafetyGuard], loadComponent: () => import('./features/video-finder/video-finder.component').then(m => m.VideoFinderComponent) },
   { path: 'retention', canActivate: [authGuard], loadComponent: () => import('./features/retention/retention.component').then(m => m.RetentionComponent) },
   { path: 'social', canActivate: [authGuard], loadComponent: () => import('./features/social/social.component').then(m => m.SocialComponent) },
   { path: 'social/groups/:groupId', canActivate: [authGuard], loadComponent: () => import('./features/social/social-group.component').then(m => m.SocialGroupComponent) },
@@ -31,23 +34,23 @@ export const routes: Routes = [
   { path: 'goals', canActivate: [authGuard], loadComponent: () => import('./features/goals/goals.component').then(m => m.GoalsComponent) },
   { path: 'share-progress', canActivate: [authGuard], loadComponent: () => import('./features/sharing/share-progress.component').then(m => m.ShareProgressComponent) },
   { path: 'learning-paths', canActivate: [authGuard], loadComponent: () => import('./features/learning-paths/learning-paths.component').then(m => m.LearningPathsComponent) },
-  { path: 'learning-paths/:id', canActivate: [authGuard], loadComponent: () => import('./features/learning-paths/learning-path-detail.component').then(m => m.LearningPathDetailComponent) },
+  { path: 'learning-paths/:id', canActivate: [authGuard], canDeactivate: [pendingChangesGuard], loadComponent: () => import('./features/learning-paths/learning-path-detail.component').then(m => m.LearningPathDetailComponent) },
   { path: 'board', canActivate: [authGuard], loadComponent: () => import('./features/board/board.component').then(m => m.BoardComponent) },
   { path: 'backlog', canActivate: [authGuard], loadComponent: () => import('./features/backlog/backlog.component').then(m => m.BacklogComponent) },
   { path: 'import', canActivate: [authGuard], loadComponent: () => import('./features/import/import.component').then(m => m.ImportComponent) },
   { path: 'notifications', canActivate: [authGuard], loadComponent: () => import('./features/notifications/notifications.component').then(m => m.NotificationsComponent) },
-  { path: 'profile', canActivate: [authGuard], loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent) },
+  { path: 'profile', canActivate: [authGuard], canDeactivate: [pendingChangesGuard], loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent) },
   { path: 'billing', canActivate: [authGuard], loadComponent: () => import('./features/billing/billing.component').then(m => m.BillingComponent) },
   { path: 'settings', canActivate: [authGuard], loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent) },
-  { path: 'ai-planner', canActivate: [authGuard], loadComponent: () => import('./features/ai-planner/ai-planner.component').then(m => m.AiPlannerComponent) },
+  { path: 'ai-planner', canActivate: [authGuard], canDeactivate: [pendingChangesGuard], loadComponent: () => import('./features/ai-planner/ai-planner.component').then(m => m.AiPlannerComponent) },
   { path: 'ai-requests', canActivate: [authGuard], loadComponent: () => import('./features/ai-requests/ai-requests.component').then(m => m.AiRequestsComponent) },
   { path: 'ai-coach', canActivate: [authGuard], loadComponent: () => import('./features/ai-coach/ai-coach.component').then(m => m.AiCoachComponent) },
   { path: 'ai-usage', canActivate: [authGuard], loadComponent: () => import('./features/ai-usage/ai-usage.component').then(m => m.AiUsageComponent) },
-  { path: 'admin', canActivate: [authGuard], loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent) },
-  { path: 'admin/entitlements', canActivate: [authGuard], loadComponent: () => import('./features/admin/entitlements.component').then(m => m.EntitlementsComponent) },
-  { path: 'admin/billing', canActivate: [authGuard], loadComponent: () => import('./features/admin/billing-settings.component').then(m => m.BillingSettingsComponent) },
-  { path: 'admin/billing-events', canActivate: [authGuard], loadComponent: () => import('./features/admin/billing-events.component').then(m => m.BillingEventsComponent) },
-  { path: 'admin/system-health', canActivate: [authGuard], loadComponent: () => import('./features/admin/system-health.component').then(m => m.SystemHealthComponent) },
-  { path: 'admin/system-limits', canActivate: [authGuard], loadComponent: () => import('./features/admin/system-limits.component').then(m => m.SystemLimitsComponent) },
+  { path: 'admin', canActivate: [adminGuard], loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent) },
+  { path: 'admin/entitlements', canActivate: [adminGuard], loadComponent: () => import('./features/admin/entitlements.component').then(m => m.EntitlementsComponent) },
+  { path: 'admin/billing', canActivate: [adminGuard], loadComponent: () => import('./features/admin/billing-settings.component').then(m => m.BillingSettingsComponent) },
+  { path: 'admin/billing-events', canActivate: [adminGuard], loadComponent: () => import('./features/admin/billing-events.component').then(m => m.BillingEventsComponent) },
+  { path: 'admin/system-health', canActivate: [adminGuard], loadComponent: () => import('./features/admin/system-health.component').then(m => m.SystemHealthComponent) },
+  { path: 'admin/system-limits', canActivate: [adminGuard], loadComponent: () => import('./features/admin/system-limits.component').then(m => m.SystemLimitsComponent) },
   { path: '**', redirectTo: '' }
 ];
