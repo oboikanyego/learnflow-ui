@@ -17,11 +17,11 @@ async function adminSession(page: Page) {
 test('admin can view and resolve support requests', async ({ page }) => {
   await adminSession(page);
   let resolved = false;
-  await page.route('**/api/v1/admin/support-requests?*', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
+  await page.route(/\/api\/v1\/admin\/support-requests(?:\?.*)?$/, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
     items: [{ _id: 'support-1', name: 'UAT Learner', email: 'learner.uat@example.com', subject: 'Video will not play', message: 'The selected lesson video does not start.', category: 'VIDEO', status: resolved ? 'RESOLVED' : 'OPEN', resolutionNote: resolved ? 'Video source was refreshed.' : undefined, createdAt: new Date().toISOString() }],
     page: 1, pageSize: 12, total: 1, totalPages: 1, counts: resolved ? { RESOLVED: 1 } : { OPEN: 1 }
   }) }));
-  await page.route('**/api/v1/admin/support-requests/support-1/status', async route => {
+  await page.route(/\/api\/v1\/admin\/support-requests\/support-1\/status$/, async route => {
     const body = route.request().postDataJSON() as { status: string };
     resolved = body.status === 'RESOLVED';
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ message: 'Support request marked resolved.' }) });
