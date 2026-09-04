@@ -49,6 +49,7 @@ export const routes: Routes = [
   { path: 'ai-coach', canActivate: [authGuard], loadComponent: () => import('./features/ai-coach/ai-coach.component').then(m => m.AiCoachComponent) },
   { path: 'ai-usage', canActivate: [authGuard], loadComponent: () => import('./features/ai-usage/ai-usage.component').then(m => m.AiUsageComponent) },
   { path: 'admin', canActivate: [adminGuard], loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent) },
+  { path: 'admin/support-requests', canActivate: [adminGuard], loadComponent: () => import('./features/admin/support-requests.component').then(m => m.SupportRequestsComponent) },
   { path: 'admin/entitlements', canActivate: [adminGuard], loadComponent: () => import('./features/admin/entitlements.component').then(m => m.EntitlementsComponent) },
   { path: 'admin/billing', canActivate: [adminGuard], loadComponent: () => import('./features/admin/billing-settings.component').then(m => m.BillingSettingsComponent) },
   { path: 'admin/billing-events', canActivate: [adminGuard], loadComponent: () => import('./features/admin/billing-events.component').then(m => m.BillingEventsComponent) },
