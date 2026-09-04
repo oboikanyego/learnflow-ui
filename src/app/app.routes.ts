@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/auth/admin.guard';
 import { authGuard } from './core/auth/auth.guard';
+import { videoSafetyGuard } from './core/auth/video-safety.guard';
 import { pendingChangesGuard } from './core/navigation/pending-changes.guard';
 
 export const routes: Routes = [
@@ -19,7 +20,7 @@ export const routes: Routes = [
   { path: 'assess/:lessonId', canActivate: [authGuard], loadComponent: () => import('./features/assessment/assessment.component').then(m => m.AssessmentComponent) },
   { path: 'mastery', canActivate: [authGuard], loadComponent: () => import('./features/assessment/mastery.component').then(m => m.MasteryComponent) },
   { path: 'study-history', canActivate: [authGuard], loadComponent: () => import('./features/focus/study-history.component').then(m => m.StudyHistoryComponent) },
-  { path: 'videos', canActivate: [authGuard], loadComponent: () => import('./features/video-finder/video-finder.component').then(m => m.VideoFinderComponent) },
+  { path: 'videos', canActivate: [authGuard, videoSafetyGuard], loadComponent: () => import('./features/video-finder/video-finder.component').then(m => m.VideoFinderComponent) },
   { path: 'retention', canActivate: [authGuard], loadComponent: () => import('./features/retention/retention.component').then(m => m.RetentionComponent) },
   { path: 'social', canActivate: [authGuard], loadComponent: () => import('./features/social/social.component').then(m => m.SocialComponent) },
   { path: 'social/groups/:groupId', canActivate: [authGuard], loadComponent: () => import('./features/social/social-group.component').then(m => m.SocialGroupComponent) },
