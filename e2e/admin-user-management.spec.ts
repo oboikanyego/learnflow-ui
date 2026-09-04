@@ -7,6 +7,7 @@ function token(): string {
 }
 async function adminSession(page: Page) {
   await page.addInitScript(t => sessionStorage.setItem('learnflow_access_token', t), token());
+  await page.addInitScript(() => localStorage.setItem('learnflow_product_tour_v1', 'completed'));
   await page.route(`${API}/auth/me`, route => route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({id:'admin-uat',name:'UAT Admin',email:'admin.uat@example.com',role:'admin',timezone:'Africa/Johannesburg',dateOfBirth:'1990-01-01T00:00:00.000Z',entitlement:{plan:'PRO',status:'ACTIVE',source:'SYSTEM'}})}));
   await page.route(`${API}/notifications`, route => route.fulfill({status:200,contentType:'application/json',body:'[]'}));
 }
@@ -27,7 +28,7 @@ test('admin sees activity, AI, subscription and cleanup status in one table', as
   await expect(page.getByText('4 plans · 14 coach')).toBeVisible();
   await expect(page.getByText('118 days remaining')).toBeVisible();
   await expect(page.getByText('126 days')).toBeVisible();
-  await expect(page.getByText('Eligible')).toBeVisible();
+  await expect(page.getByText('Eligible',{exact:true})).toBeVisible();
 });
 
 test('eligible inactive user can be cleared only after reason and explicit confirmation', async ({page}) => {
