@@ -75,6 +75,7 @@ const TOUR_STEPS = [
                 <a routerLink="/ai-planner" routerLinkActive="active"><span class="nav-icon">＋</span><span>Plan with AI</span></a>
                 <a routerLink="/import" routerLinkActive="active"><span class="nav-icon">⇧</span><span>Import plan</span></a>
                 <a routerLink="/ai-coach" routerLinkActive="active"><span class="nav-icon">✦</span><span>Coach</span></a>
+                <a routerLink="/ai-usage" routerLinkActive="active"><span class="nav-icon">▣</span><span>AI usage</span></a>
                 <a routerLink="/share-progress" routerLinkActive="active"><span class="nav-icon">↗</span><span>Share progress</span></a>
                 <a routerLink="/notifications" routerLinkActive="active"><span class="nav-icon">◉</span><span>Notifications</span>@if (notifications.unreadCount() > 0) {<em class="sidebar-count">{{ notifications.unreadCount() > 99 ? '99+' : notifications.unreadCount() }}</em>}</a>
               </div>}

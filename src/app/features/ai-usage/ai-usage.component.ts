@@ -4,6 +4,7 @@ import { ApiService } from '../../core/services/api.service';
 
 interface UsageBucket { used:number; limit:number; remaining:number; }
 interface AiUsageStatus {
+  entitlement:{ plan:'FREE'|'PRO'; status:string };
   resetsAt:{ daily:string; monthly:string };
   plan:{ daily:UsageBucket; monthly:UsageBucket };
   coach:{ daily:UsageBucket; monthly:UsageBucket };
@@ -19,6 +20,7 @@ interface AiUsageStatus {
         <button mat-stroked-button (click)="load()">Refresh usage</button>
       </div>
       @if(data();as d){
+        <div class="plan-banner"><span>Showing allowances for your current subscription</span><span class="plan-tag" [class.pro]="d.entitlement.plan==='PRO'">{{d.entitlement.plan}} plan</span></div>
         <div class="usage-grid">
           <article class="usage-card">
             <div class="usage-card-head"><span class="usage-icon">✦</span><div><span class="mini-label">Planner</span><h3>AI learning plans</h3></div></div>
@@ -36,7 +38,7 @@ interface AiUsageStatus {
     </section>
   `,
   styles:[`
-    .usage-page{max-width:1100px;margin:0 auto}.usage-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.usage-card{padding:24px;border:1px solid #e0e5ec;border-radius:20px;background:linear-gradient(180deg,#fff,#fbfcff);box-shadow:0 10px 30px rgba(16,24,40,.05)}.usage-card-head{display:flex;align-items:center;gap:13px;margin-bottom:24px}.usage-card-head h3{margin:3px 0 0;color:#10233f}.usage-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:#eaf1ff;color:#2f6fed;font-weight:900}.usage-icon.coach{background:#f1ecff;color:#6554c0}.quota-block{padding:16px 0;border-top:1px solid #edf1f5}.quota-label{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:8px;color:#66758a;font-size:.78rem}.quota-label strong{color:#10233f}.quota-track{height:10px;border-radius:999px;background:#edf1f5;overflow:hidden}.quota-track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2f6fed,#20a4c7)}.quota-block small{display:block;margin-top:8px;color:#8a97a8}.usage-note{margin-top:18px;padding:18px 20px;border:1px solid #dbe6f5;border-radius:16px;background:#f7faff;color:#44546f}.usage-note strong{color:#10233f}.usage-note p{margin:5px 0 0;line-height:1.6}.usage-error{padding:22px;border:1px solid #f1c5c9;border-radius:16px;background:#fff7f7;color:#8f2e37}.usage-loading{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.usage-loading span{height:270px;border-radius:20px;background:#f1f4f8}@media(max-width:760px){.usage-grid,.usage-loading{grid-template-columns:1fr}}
+    .usage-page{max-width:1100px;margin:0 auto}.plan-banner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 18px;margin-bottom:16px;border:1px solid #dbe6f5;border-radius:14px;background:#f7faff;color:#44546f;font-size:.78rem}.plan-tag{padding:5px 10px;border-radius:999px;background:#eef4ff;color:#175cd3;font-size:.68rem;font-weight:850}.plan-tag.pro{background:#f4f3ff;color:#6938ef}.usage-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.usage-card{padding:24px;border:1px solid #e0e5ec;border-radius:20px;background:linear-gradient(180deg,#fff,#fbfcff);box-shadow:0 10px 30px rgba(16,24,40,.05)}.usage-card-head{display:flex;align-items:center;gap:13px;margin-bottom:24px}.usage-card-head h3{margin:3px 0 0;color:#10233f}.usage-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:#eaf1ff;color:#2f6fed;font-weight:900}.usage-icon.coach{background:#f1ecff;color:#6554c0}.quota-block{padding:16px 0;border-top:1px solid #edf1f5}.quota-label{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:8px;color:#66758a;font-size:.78rem}.quota-label strong{color:#10233f}.quota-track{height:10px;border-radius:999px;background:#edf1f5;overflow:hidden}.quota-track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2f6fed,#20a4c7)}.quota-block small{display:block;margin-top:8px;color:#8a97a8}.usage-note{margin-top:18px;padding:18px 20px;border:1px solid #dbe6f5;border-radius:16px;background:#f7faff;color:#44546f}.usage-note strong{color:#10233f}.usage-note p{margin:5px 0 0;line-height:1.6}.usage-error{padding:22px;border:1px solid #f1c5c9;border-radius:16px;background:#fff7f7;color:#8f2e37}.usage-loading{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.usage-loading span{height:270px;border-radius:20px;background:#f1f4f8}@media(max-width:760px){.usage-grid,.usage-loading{grid-template-columns:1fr}}
   `]
 })
 export class AiUsageComponent implements OnInit{
