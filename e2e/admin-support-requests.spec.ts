@@ -9,6 +9,7 @@ function token(): string {
 
 async function adminSession(page: Page) {
   await page.addInitScript(t => sessionStorage.setItem('learnflow_access_token', t), token());
+  await page.addInitScript(() => localStorage.setItem('learnflow_product_tour_v1', 'completed'));
   await page.route(`${API}/auth/me`, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'uat-admin', name: 'UAT Admin', email: 'admin.uat@example.com', role: 'admin', timezone: 'Africa/Johannesburg', entitlement: { plan: 'FREE', status: 'ACTIVE', source: 'SYSTEM' } }) }));
   await page.route(`${API}/auth/registration-policy`, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ minimumAge: 13 }) }));
   await page.route(`${API}/notifications`, route => route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
