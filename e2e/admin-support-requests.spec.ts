@@ -34,5 +34,5 @@ test('admin can view and resolve unified support requests', async ({ page }) => 
   await expect(page.getByText('Support', { exact: true })).toBeVisible();
   await expect(page.getByText('Video will not play')).toBeVisible();
   await page.getByRole('button', { name: 'Resolve' }).click();
-  await expect(page.getByText('Resolved')).toBeVisible();
+  await expect(page.locator('.status[data-status="RESOLVED"]')).toBeVisible();
 });
